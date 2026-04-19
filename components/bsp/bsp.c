@@ -1,4 +1,4 @@
-#include "bsp_board.h"
+#include "bsp.h"
 
 #include <stdbool.h>
 #include "esp_err.h"
@@ -51,17 +51,17 @@ static i2c_master_bus_handle_t i2c_bus_handle = NULL;
 static uint32_t SDCard_Size  = 0;
 
 
-esp_codec_dev_handle_t esp_ret_play_dev(void)
+esp_codec_dev_handle_t bsp_play_codec(void)
 {
     return play_dev;
 }
 
-i2c_master_bus_handle_t esp_ret_i2c_handle(void)
+i2c_master_bus_handle_t bsp_i2c_handle(void)
 {
     return i2c_bus_handle;
 }
 
-uint32_t Get_SD_Size(void)
+uint32_t bsp_sd_capacity_mb(void)
 {
     return SDCard_Size;
 }
@@ -243,7 +243,7 @@ static esp_err_t bsp_codec_dac_deinit()
     return ret_val;
 }
 
-esp_err_t esp_audio_set_play_vol(int volume)
+esp_err_t bsp_set_volume(int volume)
 {
     if (!play_dev) {
         ESP_LOGE(TAG, "DAC codec init fail");
@@ -253,7 +253,7 @@ esp_err_t esp_audio_set_play_vol(int volume)
     return ESP_OK;
 }
 
-esp_err_t esp_audio_get_play_vol(int *volume)
+esp_err_t bsp_get_volume(int *volume)
 {
     if (!play_dev) {
         ESP_LOGE(TAG, "DAC codec init fail");
@@ -367,7 +367,7 @@ static esp_err_t bsp_codec_deinit()
     return ret_val;
 }
 
-esp_err_t esp_audio_play(const int16_t* data, int length, uint32_t ticks_to_wait)
+esp_err_t bsp_i2s_write(const int16_t* data, int length, uint32_t ticks_to_wait)
 {
     size_t bytes_write = 0;
     esp_err_t ret = ESP_OK;
@@ -425,14 +425,14 @@ esp_err_t esp_audio_play(const int16_t* data, int length, uint32_t ticks_to_wait
     return ret;
 }
 
-esp_err_t esp_get_feed_data(bool is_get_raw_channel, int16_t *buffer, int buffer_len)
+esp_err_t bsp_i2s_read_mic(bool reorder, int16_t *buffer, int buffer_len)
 {
     esp_err_t ret = ESP_OK;
     size_t bytes_read;
     int audio_chunksize = buffer_len / (sizeof(int16_t) * ADC_I2S_CHANNEL);
 
     ret = esp_codec_dev_read(record_dev, (void *)buffer, buffer_len);
-    if (!is_get_raw_channel) {
+    if (!reorder) {
         for (int i = 0; i < audio_chunksize; i++) {
             int16_t ref = buffer[4 * i + 0];
             buffer[3 * i + 0] = buffer[4 * i + 1];
@@ -444,12 +444,12 @@ esp_err_t esp_get_feed_data(bool is_get_raw_channel, int16_t *buffer, int buffer
     return ret;
 }
 
-int esp_get_feed_channel(void)
+int bsp_mic_channels(void)
 {
     return ADC_I2S_CHANNEL;
 }
 
-char* esp_get_input_format(void)
+const char* bsp_mic_format(void)
 {
     return "RMNM";
 }
@@ -458,7 +458,7 @@ char* esp_get_input_format(void)
 
 
 
-esp_err_t esp_board_init(uint32_t sample_rate, int channel_format, int bits_per_chan)
+esp_err_t bsp_init(uint32_t sample_rate, int channel_format, int bits_per_chan)
 {
     /*!< Initialize I2C bus, used for audio codec*/
 
@@ -495,7 +495,7 @@ esp_err_t esp_board_init(uint32_t sample_rate, int channel_format, int bits_per_
     return ESP_OK;
 }
 
-esp_err_t esp_sdcard_init(char *mount_point, size_t max_files)
+esp_err_t bsp_sdcard_mount(const char *mount_point, size_t max_files)
 {
     if (NULL != card) {
         return ESP_ERR_INVALID_STATE;
@@ -614,7 +614,7 @@ esp_err_t esp_sdcard_init(char *mount_point, size_t max_files)
     return ret_val;
 }
 
-esp_err_t esp_sdcard_deinit(char *mount_point)
+esp_err_t bsp_sdcard_unmount(const char *mount_point)
 {
     if (NULL == mount_point) {
         return ESP_ERR_INVALID_STATE;
@@ -635,9 +635,9 @@ static const char *SD_TAG = "SD";
 
 
 
-uint16_t Folder_retrieval(const char* directory, const char* fileExtension, char File_Name[][MAX_FILE_NAME_SIZE], uint16_t maxFiles)    
+uint16_t bsp_list_files(const char* directory, const char* fileExtension, char File_Name[][MAX_FILE_NAME_SIZE], uint16_t maxFiles)
 {
-    DIR *dir = opendir(directory);  
+    DIR *dir = opendir(directory);
     if (dir == NULL) {
         ESP_LOGE(SD_TAG, "Path: <%s> does not exist", directory); 
         return 0;  
