@@ -14,4 +14,6 @@ idf_component_register(
         stats
         onboarding
         console_cmds
+        backend_client
+        nvs_flash
 )
