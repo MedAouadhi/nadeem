@@ -1,0 +1,219 @@
+{
+  "main": {
+    "id": "c2cb74969534de88",
+    "type": "split",
+    "children": [
+      {
+        "id": "ff8fe37a7a68bb7a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "54b6b5f3879ecd08",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d346f0147beb0328",
+    "type": "split",
+    "children": [
+      {
+        "id": "1aa01d1926d33302",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d3b7dba56582b0b1",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "57572d47b8f4007f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "1ece3be3eeadd149",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "4f3a1f7032138282",
+    "type": "split",
+    "children": [
+      {
+        "id": "0c274dcf8bf61f97",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5f348eb8eeb53fbe",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "05533b72c920b052",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "6019b7c7c111022c",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "1b1d6f743519133b",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "83bf92ad7f51fa72",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "54b6b5f3879ecd08",
+  "lastOpenFiles": [
+    "README.md",
+    "README.md.tmp.3917611.1777068305836",
+    "pages/backend/data-model.md",
+    "lint.md",
+    "lint.md.tmp.3917611.1777068289783",
+    "decisions/0005-django-postgres-backend.md",
+    "decisions/0007-stats-cumulative-snapshots.md",
+    "decisions/0007-stats-cumulative-snapshots.md.tmp.3917611.1777068267159",
+    "pages/firmware/state-machines.md",
+    "decisions/0006-nextjs-rtl-arabic.md",
+    "decisions/0006-nextjs-rtl-arabic.md.tmp.3917611.1777068255615",
+    "decisions/0005-django-postgres-backend.md.tmp.3917611.1777068245230",
+    "pages/frontend/design-system.md",
+    "decisions/0004-pcm16-16k-mono.md",
+    "decisions/0004-pcm16-16k-mono.md.tmp.3917611.1777068234628",
+    "decisions/0003-smf-state-machines.md.tmp.3917611.1777068222040",
+    "Untitled.canvas",
+    "2026-04-25.md",
+    "decisions/0002-pn532-uart.md",
+    "decisions/0002-pn532-uart.md.tmp.3917611.1777068201154",
+    "decisions/0001-esp32s3-audio-board.md",
+    "decisions/0001-esp32s3-audio-board.md.tmp.3917611.1777068190724",
+    "decisions/index.md",
+    "decisions/index.md.tmp.3917611.1777068181285",
+    "graph/relationships.md",
+    "graph/entities.md",
+    "pages/mobile/flow.md",
+    "pages/mobile/overview.md",
+    "pages/system/architecture.md",
+    "pages/frontend/api-mapping.md",
+    "pages/frontend/screens.md",
+    "pages/frontend/overview.md",
+    "pages/backend/security.md",
+    "AGENTS.md",
+    "pages/system/workflows.md",
+    "pages/backend/chat-pipeline.md",
+    "pages/mobile/local-api.md"
+  ]
+}
