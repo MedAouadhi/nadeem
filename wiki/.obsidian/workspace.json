@@ -11,10 +11,14 @@
             "id": "54b6b5f3879ecd08",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "pages/frontend/screens.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "screens"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "pages/mobile/local-api.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for local-api"
             }
           },
           {
@@ -108,11 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "pages/mobile/local-api.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from local-api"
             }
           },
           {
@@ -150,12 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "pages/mobile/local-api.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of local-api"
             }
           }
         ]
@@ -176,8 +183,27 @@
       "bases:Create new base": false
     }
   },
-  "active": "54b6b5f3879ecd08",
+  "active": "d3b7dba56582b0b1",
   "lastOpenFiles": [
+    "pages/frontend/overview.md",
+    "pages/frontend/design-system.md",
+    "pages/frontend/api-mapping.md",
+    "pages/firmware/state-machines.md",
+    "pages/firmware/overview.md",
+    "pages/firmware/onboarding.md",
+    "pages/firmware/limitations.md",
+    "pages/firmware/hardware.md",
+    "pages/firmware/events.md",
+    "pages/firmware/console.md",
+    "pages/firmware/components.md",
+    "graph/relationships.md",
+    "graph/entities.md",
+    "decisions/0003-smf-state-machines.md",
+    "decisions/0001-esp32s3-audio-board.md",
+    "decisions/0004-pcm16-16k-mono.md",
+    "decisions/0002-pn532-uart.md",
+    "pages/mobile/local-api.md",
+    "index.md",
     "README.md",
     "README.md.tmp.3917611.1777068305836",
     "pages/backend/data-model.md",
@@ -186,34 +212,15 @@
     "decisions/0005-django-postgres-backend.md",
     "decisions/0007-stats-cumulative-snapshots.md",
     "decisions/0007-stats-cumulative-snapshots.md.tmp.3917611.1777068267159",
-    "pages/firmware/state-machines.md",
     "decisions/0006-nextjs-rtl-arabic.md",
     "decisions/0006-nextjs-rtl-arabic.md.tmp.3917611.1777068255615",
     "decisions/0005-django-postgres-backend.md.tmp.3917611.1777068245230",
-    "pages/frontend/design-system.md",
-    "decisions/0004-pcm16-16k-mono.md",
     "decisions/0004-pcm16-16k-mono.md.tmp.3917611.1777068234628",
     "decisions/0003-smf-state-machines.md.tmp.3917611.1777068222040",
     "Untitled.canvas",
     "2026-04-25.md",
-    "decisions/0002-pn532-uart.md",
     "decisions/0002-pn532-uart.md.tmp.3917611.1777068201154",
-    "decisions/0001-esp32s3-audio-board.md",
     "decisions/0001-esp32s3-audio-board.md.tmp.3917611.1777068190724",
-    "decisions/index.md",
-    "decisions/index.md.tmp.3917611.1777068181285",
-    "graph/relationships.md",
-    "graph/entities.md",
-    "pages/mobile/flow.md",
-    "pages/mobile/overview.md",
-    "pages/system/architecture.md",
-    "pages/frontend/api-mapping.md",
-    "pages/frontend/screens.md",
-    "pages/frontend/overview.md",
-    "pages/backend/security.md",
-    "AGENTS.md",
-    "pages/system/workflows.md",
-    "pages/backend/chat-pipeline.md",
-    "pages/mobile/local-api.md"
+    "decisions/index.md.tmp.3917611.1777068181285"
   ]
 }
