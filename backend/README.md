@@ -40,3 +40,12 @@ curl -X POST http://localhost:8000/api/dev/devices \
 ```bash
 docker compose run --rm backend pytest -v
 ```
+
+## Production checklist
+
+- Set `DJANGO_DEBUG=false`.
+- Set a strong `DJANGO_SECRET_KEY`.
+- Set a real `GEMINI_API_KEY`.
+- Set `DEV_PROVISIONING_ENABLED=false`.
+- Terminate TLS upstream (reverse proxy / load balancer).
+- Point `S3_PUBLIC_ENDPOINT_URL` to a CDN.
