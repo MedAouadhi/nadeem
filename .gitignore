@@ -1,4 +1,6 @@
 # --- Tooling ---
+.claude
+.github/skills
 .opencode/
 opencode.json
 
