@@ -17,7 +17,7 @@ def _extract_token(scope) -> str | None:
     for name, value in scope.get("headers", []):
         if name == b"authorization":
             v = value.decode()
-            if v.lower().startswith("bearer "):
+            if v.lower().startswith("device "):
                 return v[7:].strip()
     return None
 

@@ -19,7 +19,7 @@ def _make(user_email="p@x.com"):
 def test_authenticates_valid_bearer():
     raw = _make()
     rf = APIRequestFactory()
-    req = rf.get("/", HTTP_AUTHORIZATION=f"Bearer {raw}")
+    req = rf.get("/", HTTP_AUTHORIZATION=f"Device {raw}")
     user, dev = DeviceTokenAuthentication().authenticate(req)
     assert dev.device_id == "aabbccddeeff"
 
@@ -32,7 +32,14 @@ def test_rejects_missing_header():
 
 def test_rejects_unknown_token():
     rf = APIRequestFactory()
-    req = rf.get("/", HTTP_AUTHORIZATION="Bearer not-a-real-token")
+    req = rf.get("/", HTTP_AUTHORIZATION="Device not-a-real-token")
     from rest_framework.exceptions import AuthenticationFailed
     with pytest.raises(AuthenticationFailed):
         DeviceTokenAuthentication().authenticate(req)
+
+
+def test_rejects_bearer_scheme_for_device_auth():
+    raw = _make()
+    rf = APIRequestFactory()
+    req = rf.get("/", HTTP_AUTHORIZATION=f"Bearer {raw}")
+    assert DeviceTokenAuthentication().authenticate(req) is None

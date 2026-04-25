@@ -46,3 +46,20 @@ async def test_ws_accepts_with_query_token(device_token, monkeypatch):
     connected, _ = await comm.connect()
     assert connected
     await comm.disconnect()
+
+
+async def test_ws_rejects_invalid_uid_hex(device_token, monkeypatch):
+    monkeypatch.setattr(gemini_client, "GeminiLiveSession", lambda role: _FakeSession())
+    url = f"/chat?role=doctor&device=aabbccddeeff&semsem=ZZZZ&token={device_token}"
+    comm = WebsocketCommunicator(application, url)
+    connected, _ = await comm.connect()
+    assert not connected
+
+
+async def test_ws_rejects_oversized_role(device_token, monkeypatch):
+    monkeypatch.setattr(gemini_client, "GeminiLiveSession", lambda role: _FakeSession())
+    long_role = "x" * 32
+    url = f"/chat?role={long_role}&device=aabbccddeeff&semsem=aa&token={device_token}"
+    comm = WebsocketCommunicator(application, url)
+    connected, _ = await comm.connect()
+    assert not connected

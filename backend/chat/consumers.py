@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 from urllib.parse import parse_qs
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -7,6 +8,11 @@ from django.utils import timezone
 
 from . import gemini_client
 from .models import ProChatSession, TranscriptEntry
+
+_UID_HEX_RE = re.compile(r"^[0-9a-f]{2,20}$")
+
+
+GEMINI_CLEANUP_TIMEOUT = 5.0
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -19,6 +25,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.role = (qs.get("role") or [""])[0]
         self.uid_hex = (qs.get("semsem") or [""])[0].lower()
         if not self.role or not self.uid_hex:
+            await self.close(code=4400)
+            return
+        if not _UID_HEX_RE.match(self.uid_hex):
+            await self.close(code=4400)
+            return
+        if len(self.role.encode("utf-8")) > 31:
             await self.close(code=4400)
             return
         self.device = device
@@ -34,7 +46,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self._reader.cancel()
         if hasattr(self, "_gemini_cm"):
             try:
-                await self._gemini_cm.__aexit__(None, None, None)
+                await asyncio.wait_for(
+                    self._gemini_cm.__aexit__(None, None, None),
+                    timeout=GEMINI_CLEANUP_TIMEOUT,
+                )
             except Exception:
                 pass
         if hasattr(self, "session") and self.session:
@@ -59,6 +74,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except asyncio.CancelledError:
             raise
         except Exception:
+            try:
+                await self.send(text_data=json.dumps({"status": "error"}))
+            except Exception:
+                pass
             await self.close(code=4500)
 
     @database_sync_to_async

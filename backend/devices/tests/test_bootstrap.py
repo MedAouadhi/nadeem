@@ -52,3 +52,13 @@ def test_bootstrap_rebind_same_device(api_client):
     r2 = api_client.post("/bootstrap", {"provision_token": raw2, "device_id": "aabbccddeeff"}, format="json")
     assert r1.data["device_token"] != r2.data["device_token"]
     assert Device.objects.filter(device_id="aabbccddeeff").count() == 1
+
+def test_bootstrap_rate_limited(api_client):
+    from django.core.cache import cache
+    cache.clear()
+    for i in range(11):
+        raw = generate_token()
+        user = get_user_model().objects.create_user(email=f"rate{i}@x.com", password="x")
+        ProvisioningToken.objects.create(user=user, token_hash=hash_token(raw), expires_at=timezone.now() + timedelta(minutes=10))
+        r = api_client.post("/bootstrap", {"provision_token": raw, "device_id": f"{i:012x}"}, format="json")
+    assert r.status_code == 429

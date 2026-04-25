@@ -4,7 +4,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, throttling
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -33,6 +33,8 @@ class ProvisioningTokenCreateView(APIView):
 class BootstrapView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [throttling.ScopedRateThrottle]
+    throttle_scope = "bootstrap"
 
     def post(self, request):
         raw = request.data.get("provision_token", "")
@@ -40,24 +42,22 @@ class BootstrapView(APIView):
         if not raw or not DEVICE_ID_PATTERN.match(device_id):
             return Response({"detail": "bad request"}, status=status.HTTP_400_BAD_REQUEST)
 
+        device_token = generate_token()
         try:
-            pt = ProvisioningToken.objects.select_related("user").get(
-                token_hash=hash_token(raw)
-            )
+            with transaction.atomic():
+                pt = ProvisioningToken.objects.select_related("user").select_for_update().get(
+                    token_hash=hash_token(raw)
+                )
+                if pt.is_used() or pt.is_expired():
+                    return Response({"detail": "invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+                pt.used_at = timezone.now()
+                pt.save(update_fields=["used_at"])
+                Device.objects.update_or_create(
+                    device_id=device_id,
+                    defaults={"user": pt.user, "token_hash": hash_token(device_token)},
+                )
         except ProvisioningToken.DoesNotExist:
             return Response({"detail": "invalid token"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if pt.is_used() or pt.is_expired():
-            return Response({"detail": "invalid token"}, status=status.HTTP_400_BAD_REQUEST)
-
-        device_token = generate_token()
-        with transaction.atomic():
-            pt.used_at = timezone.now()
-            pt.save(update_fields=["used_at"])
-            Device.objects.update_or_create(
-                device_id=device_id,
-                defaults={"user": pt.user, "token_hash": hash_token(device_token)},
-            )
         return Response({"device_id": device_id, "device_token": device_token})
 
 class DevProvisionView(APIView):

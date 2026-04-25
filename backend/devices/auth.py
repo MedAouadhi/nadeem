@@ -6,7 +6,7 @@ from .tokens import hash_token
 
 
 class DeviceTokenAuthentication(authentication.BaseAuthentication):
-    keyword = "Bearer"
+    keyword = "Device"
 
     def authenticate(self, request):
         header = request.META.get("HTTP_AUTHORIZATION", "")

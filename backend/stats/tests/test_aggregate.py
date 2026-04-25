@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from devices.models import Device
 from stats.models import UsageStats
 from semsems.models import Semsem
@@ -41,3 +42,22 @@ def test_excludes_other_users(api_client):
     r = api_client.get("/api/users/me/stats")
     assert r.data["total_listening_ms"] == 0
     assert r.data["device_count"] == 0
+
+def test_excludes_phantom_uids_without_semsem(api_client):
+    _login(api_client)
+    me = get_user_model().objects.get(email="a@b.com")
+    d = Device.objects.create(device_id="d"*12, user=me, token_hash="d"*64)
+    UsageStats.objects.create(device=d, uid_hex="ff", play_count=5, total_play_ms=5000,
+                              last_played_unix=1, pro_session_count=0, pro_total_ms=0)
+    r = api_client.get("/api/users/me/stats")
+    assert r.data["unique_semsems"] == 0
+    assert r.data["total_listening_ms"] == 0
+
+def test_online_device_count_uses_db_query(api_client):
+    _login(api_client)
+    me = get_user_model().objects.get(email="a@b.com")
+    Device.objects.create(device_id="e"*12, user=me, token_hash="e"*64, last_seen_at=timezone.now())
+    Device.objects.create(device_id="f"*12, user=me, token_hash="f"*64)
+    r = api_client.get("/api/users/me/stats")
+    assert r.data["device_count"] == 2
+    assert r.data["online_device_count"] == 1

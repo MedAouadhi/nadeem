@@ -13,7 +13,7 @@ def _device(api_client):
     user = get_user_model().objects.create_user(email="a@b.com", password="x")
     raw = generate_token()
     Device.objects.create(device_id="aabbccddeeff", user=user, token_hash=hash_token(raw))
-    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+    api_client.credentials(HTTP_AUTHORIZATION=f"Device {raw}")
 
 
 def test_returns_regular_manifest_with_absolute_urls(api_client):
