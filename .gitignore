@@ -1,7 +1,5 @@
 # --- Tooling ---
-.claude/
 .opencode/
-.github/
 opencode.json
 
 # --- OS ---
