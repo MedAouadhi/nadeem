@@ -6,11 +6,11 @@ services:
       POSTGRES_USER: nadeem
       POSTGRES_PASSWORD: nadeem_dev
     volumes: [pgdata:/var/lib/postgresql/data]
-    ports: ["5432:5432"]
+    ports: ["5433:5432"]
 
   redis:
     image: redis:7-alpine
-    ports: ["6379:6379"]
+    ports: ["6380:6379"]
 
   minio:
     image: minio/minio:latest
@@ -19,7 +19,7 @@ services:
       MINIO_ROOT_USER: nadeem
       MINIO_ROOT_PASSWORD: nadeem_dev_password
     volumes: [miniodata:/data]
-    ports: ["9000:9000", "9001:9001"]
+    ports: ["9002:9000", "9003:9001"]
 
   minio-bootstrap:
     image: minio/mc:latest
