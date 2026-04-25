@@ -22,13 +22,13 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` pending.
   - Boot check skipped (port conflict with another local MinIO,
     not a code defect).
 
-- [~] **2. Custom User model**
+- [x] **2. Custom User model**
   - Email-based `AbstractBaseUser` + `UserManager` in
     `accounts/models.py`. Admin registration. Initial migration.
   - TDD: `test_user_uses_email_as_username`,
     `test_email_is_unique`.
 
-- [ ] **3. JWT login + `/api/auth/me`**
+- [x] **3. JWT login + `/api/auth/me`**
   - `EmailTokenObtainPairSerializer`, `LoginView`,
     `TokenRefreshView`, `MeView`. Tests for token pair, wrong
     password, authed `/me`, unauth `/me`.
