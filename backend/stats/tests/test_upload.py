@@ -1,9 +1,10 @@
 import pytest
 from django.contrib.auth import get_user_model
+
 from devices.models import Device
 from devices.tokens import generate_token, hash_token
-from stats.models import UsageStats
 from semsems.models import Semsem
+from stats.models import UsageStats
 
 pytestmark = pytest.mark.django_db
 

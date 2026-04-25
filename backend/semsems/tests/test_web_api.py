@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
+
 from devices.models import Device
 from semsems.models import Semsem
 from stats.models import UsageStats

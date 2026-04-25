@@ -1,10 +1,13 @@
-import pytest
 from io import StringIO
+
+import pytest
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import override_settings
-from django.contrib.auth import get_user_model
+
 from devices.models import Device
 from devices.tokens import hash_token
+
 pytestmark = pytest.mark.django_db
 
 def test_management_command_creates_device():

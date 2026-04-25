@@ -2,10 +2,11 @@ import pytest
 from channels.db import database_sync_to_async
 from channels.testing import WebsocketCommunicator
 from django.contrib.auth import get_user_model
+
+from chat import gemini_client
 from devices.models import Device
 from devices.tokens import generate_token, hash_token
 from nadeem.asgi import application
-from chat import gemini_client
 
 pytestmark = [pytest.mark.django_db(transaction=True), pytest.mark.asyncio]
 

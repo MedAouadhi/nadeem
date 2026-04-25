@@ -1,5 +1,6 @@
 import pytest
-from chat.gemini_client import GeminiLiveSession, GeminiEvent
+
+from chat.gemini_client import GeminiLiveSession
 
 pytestmark = pytest.mark.asyncio
 

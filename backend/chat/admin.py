@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from .models import ProChatSession, TranscriptEntry
+
 
 class TranscriptInline(admin.TabularInline):
     model = TranscriptEntry

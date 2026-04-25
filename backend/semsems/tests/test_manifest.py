@@ -1,10 +1,12 @@
-import pytest
 from unittest.mock import patch
-from django.core.files.base import ContentFile
+
+import pytest
 from django.contrib.auth import get_user_model
-from semsems.models import Semsem, Track
+from django.core.files.base import ContentFile
+
 from devices.models import Device
 from devices.tokens import generate_token, hash_token
+from semsems.models import Semsem, Track
 
 pytestmark = pytest.mark.django_db
 

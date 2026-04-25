@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import ChatSessionListView, ChatSessionDetailView
+
+from .views import ChatSessionDetailView, ChatSessionListView
 
 urlpatterns = [
     path("api/chat-sessions", ChatSessionListView.as_view()),

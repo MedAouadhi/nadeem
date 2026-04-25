@@ -1,9 +1,12 @@
+from datetime import timedelta
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from datetime import timedelta
+
 from devices.models import Device, ProvisioningToken
 from devices.tokens import generate_token, hash_token
+
 pytestmark = pytest.mark.django_db
 
 def _seed_pt():

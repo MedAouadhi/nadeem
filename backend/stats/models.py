@@ -1,5 +1,7 @@
 from django.db import models
+
 from devices.models import Device
+
 
 class UsageStats(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name="stats")

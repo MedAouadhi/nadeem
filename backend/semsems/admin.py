@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from .models import Semsem, Track
+
 
 class TrackInline(admin.TabularInline):
     model = Track

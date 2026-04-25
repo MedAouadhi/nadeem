@@ -1,6 +1,7 @@
 # devices/auth.py
 from django.utils import timezone
 from rest_framework import authentication, exceptions
+
 from .models import Device
 from .tokens import hash_token
 

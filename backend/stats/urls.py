@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import StatsUploadView, MyStatsView
+
+from .views import MyStatsView, StatsUploadView
 
 urlpatterns = [
     path("stats", StatsUploadView.as_view()),

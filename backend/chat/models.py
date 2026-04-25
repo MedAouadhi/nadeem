@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
+
 from devices.models import Device
+
 
 class ProChatSession(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name="chat_sessions")

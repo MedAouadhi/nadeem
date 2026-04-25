@@ -1,7 +1,8 @@
 import pytest
 from django.contrib.auth import get_user_model
-from devices.models import Device
+
 from chat.models import ProChatSession, TranscriptEntry
+from devices.models import Device
 
 pytestmark = pytest.mark.django_db
 

@@ -1,6 +1,9 @@
 from __future__ import annotations
+
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
-from typing import AsyncIterator, Literal
+from typing import Literal
+
 from django.conf import settings
 
 

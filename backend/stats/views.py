@@ -1,16 +1,19 @@
 from datetime import timedelta
 
-from django.db.models import Sum, Count
+from django.db.models import Count, Sum
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from devices.auth import DeviceTokenAuthentication
 from devices.models import Device
 from semsems.models import Semsem
+
 from .models import UsageStats
 from .serializers import StatsUploadSerializer
+
 
 class StatsUploadView(APIView):
     authentication_classes = [DeviceTokenAuthentication]

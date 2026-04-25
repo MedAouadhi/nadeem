@@ -1,7 +1,10 @@
 from urllib.parse import parse_qs
+
 from channels.db import database_sync_to_async
+
 from devices.models import Device
 from devices.tokens import hash_token
+
 
 @database_sync_to_async
 def _get_device(token: str):

@@ -1,11 +1,13 @@
 from django.urls import path
+
 from .views import (
-    ProvisioningTokenCreateView,
     BootstrapView,
-    DevProvisionView,
-    DeviceListView,
     DeviceDestroyView,
+    DeviceListView,
+    DevProvisionView,
+    ProvisioningTokenCreateView,
 )
+
 urlpatterns = [
     path("api/provisioning-tokens", ProvisioningTokenCreateView.as_view()),
     path("bootstrap", BootstrapView.as_view()),

@@ -1,6 +1,8 @@
 import pytest
 from django.contrib.auth import get_user_model
+
 from devices.models import Device
+
 pytestmark = pytest.mark.django_db
 
 def _login(api_client, email="a@b.com"):

@@ -2,6 +2,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIRequestFactory
+
 from devices.auth import DeviceTokenAuthentication
 from devices.models import Device
 from devices.tokens import generate_token, hash_token

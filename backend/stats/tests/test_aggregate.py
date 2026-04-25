@@ -1,9 +1,10 @@
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+
 from devices.models import Device
-from stats.models import UsageStats
 from semsems.models import Semsem
+from stats.models import UsageStats
 
 pytestmark = pytest.mark.django_db
 

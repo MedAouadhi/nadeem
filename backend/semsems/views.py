@@ -2,13 +2,15 @@ from django.db.models import Sum
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from devices.auth import DeviceTokenAuthentication
 from stats.models import UsageStats
+
 from .models import Semsem
 from .serializers import (
-    FirmwareManifestSerializer, 
-    SemsemWebListSerializer, 
-    SemsemWebDetailSerializer
+    FirmwareManifestSerializer,
+    SemsemWebDetailSerializer,
+    SemsemWebListSerializer,
 )
 
 

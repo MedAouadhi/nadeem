@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import FirmwareManifestView, SemsemListWebView, SemsemDetailWebView
+
+from .views import FirmwareManifestView, SemsemDetailWebView, SemsemListWebView
 
 urlpatterns = [
     path("semsem/<str:uid_hex>/manifest", FirmwareManifestView.as_view()),

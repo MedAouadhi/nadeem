@@ -1,5 +1,6 @@
 import pytest
 from django.core.exceptions import ValidationError
+
 from semsems.models import Semsem, Track
 
 pytestmark = pytest.mark.django_db

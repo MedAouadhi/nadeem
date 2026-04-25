@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
+
 from devices.models import Device
 from devices.tokens import generate_token, hash_token
+
 
 class Command(BaseCommand):
     help = "Bind a device_id to a user without the mobile-app handshake. Dev only."
