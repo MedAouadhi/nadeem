@@ -24,3 +24,20 @@ class FirmwareManifestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Semsem
         fields = ["uid", "title", "pro", "role", "tracks"]
+
+class SemsemWebListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Semsem
+        fields = ["uid_hex", "title", "is_pro", "role"]
+
+class SemsemWebDetailSerializer(serializers.ModelSerializer):
+    pro_total_ms = serializers.IntegerField(read_only=True)
+    total_play_ms = serializers.IntegerField(read_only=True)
+    play_count = serializers.IntegerField(read_only=True)
+    pro_session_count = serializers.IntegerField(read_only=True)
+    tracks = TrackManifestSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Semsem
+        fields = ["uid_hex", "title", "is_pro", "role", "tracks",
+                  "play_count", "total_play_ms", "pro_session_count", "pro_total_ms"]
