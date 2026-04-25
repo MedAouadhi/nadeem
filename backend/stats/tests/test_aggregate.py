@@ -1,0 +1,43 @@
+import pytest
+from django.contrib.auth import get_user_model
+from devices.models import Device
+from stats.models import UsageStats
+from semsems.models import Semsem
+
+pytestmark = pytest.mark.django_db
+
+def _login(api_client):
+    get_user_model().objects.create_user(email="a@b.com", password="pw12345!")
+    tok = api_client.post("/api/auth/login", {"email": "a@b.com", "password": "pw12345!"}, format="json").data["access"]
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {tok}")
+
+def test_aggregates_across_my_devices(api_client):
+    _login(api_client)
+    me = get_user_model().objects.get(email="a@b.com")
+    d1 = Device.objects.create(device_id="a"*12, user=me, token_hash="a"*64)
+    d2 = Device.objects.create(device_id="b"*12, user=me, token_hash="b"*64)
+    Semsem.objects.create(uid_hex="aa", title="x", is_pro=False)
+    Semsem.objects.create(uid_hex="bb", title="y", is_pro=True, role="doctor")
+    UsageStats.objects.create(device=d1, uid_hex="aa", play_count=1, total_play_ms=60_000,
+                              last_played_unix=1, pro_session_count=0, pro_total_ms=0)
+    UsageStats.objects.create(device=d2, uid_hex="bb", play_count=0, total_play_ms=0,
+                              last_played_unix=2, pro_session_count=3, pro_total_ms=120_000)
+    r = api_client.get("/api/users/me/stats")
+    assert r.status_code == 200
+    assert r.data == {
+        "total_listening_ms": 60_000,
+        "unique_semsems": 2,
+        "pro_total_ms": 120_000,
+        "device_count": 2,
+        "online_device_count": 0,
+    }
+
+def test_excludes_other_users(api_client):
+    _login(api_client)
+    other = get_user_model().objects.create_user(email="x@y.com", password="x")
+    d = Device.objects.create(device_id="c"*12, user=other, token_hash="c"*64)
+    UsageStats.objects.create(device=d, uid_hex="aa", play_count=10, total_play_ms=999_999,
+                              last_played_unix=1, pro_session_count=0, pro_total_ms=0)
+    r = api_client.get("/api/users/me/stats")
+    assert r.data["total_listening_ms"] == 0
+    assert r.data["device_count"] == 0
