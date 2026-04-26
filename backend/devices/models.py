@@ -16,6 +16,13 @@ class Device(models.Model):
     token_hash = models.CharField(max_length=64, unique=True)
     last_seen_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
+    release_group = models.ForeignKey(
+        "firmware.ReleaseGroup",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="devices",
+    )
 
     def clean(self):
         if self.device_id != self.device_id.lower():
