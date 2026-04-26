@@ -16,6 +16,10 @@ class DisableMigrations:
 MIGRATION_MODULES = DisableMigrations()
 
 INSTALLED_APPS = [
+    "unfold",
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
+    "adminsortable2",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -30,6 +34,7 @@ INSTALLED_APPS = [
     "semsems",
     "stats",
     "chat",
+    "firmware",
 ]
 
 MIDDLEWARE = [
@@ -45,7 +50,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = "nadeem.urls"
 TEMPLATES = [{
     "BACKEND": "django.template.backends.django.DjangoTemplates",
-    "DIRS": [], "APP_DIRS": True,
+    "DIRS": [BASE_DIR / "nadeem" / "templates"],
+    "APP_DIRS": True,
     "OPTIONS": {"context_processors": [
         "django.template.context_processors.request",
         "django.contrib.auth.context_processors.auth",
