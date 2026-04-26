@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from adminsortable2.admin import SortableInlineAdminMixin
+from adminsortable2.admin import SortableAdminBase, SortableInlineAdminMixin
 from unfold.admin import ModelAdmin
 
 from nadeem.admin_site import admin_site
@@ -25,7 +25,7 @@ class TrackInline(SortableInlineAdminMixin, admin.TabularInline):
         return "—"
 
 
-class SemsemAdmin(ModelAdmin):
+class SemsemAdmin(SortableAdminBase, ModelAdmin):
     list_display = ["uid_hex", "title", "pro_badge", "group_list", "track_count", "created_at"]
     search_fields = ["uid_hex", "title"]
     list_filter = ["is_pro", "groups"]
