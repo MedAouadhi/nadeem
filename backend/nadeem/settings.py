@@ -10,6 +10,10 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 INSTALLED_APPS = [
+    "unfold",
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
+    "adminsortable2",
     "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -25,6 +29,7 @@ INSTALLED_APPS = [
     "semsems",
     "stats",
     "chat",
+    "firmware",
 ]
 
 MIDDLEWARE = [
@@ -40,7 +45,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = "nadeem.urls"
 TEMPLATES = [{
     "BACKEND": "django.template.backends.django.DjangoTemplates",
-    "DIRS": [], "APP_DIRS": True,
+    "DIRS": [BASE_DIR / "nadeem" / "templates"],
+    "APP_DIRS": True,
     "OPTIONS": {"context_processors": [
         "django.template.context_processors.request",
         "django.contrib.auth.context_processors.auth",
@@ -120,6 +126,58 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATIC_URL = "static/"
+
+UNFOLD = {
+    "SITE_TITLE": "Nadeem Admin",
+    "SITE_HEADER": "نديم — لوحة الإدارة",
+    "SITE_URL": "/",
+    "DASHBOARD_CALLBACK": "nadeem.dashboard.dashboard_callback",
+    "SIDEBAR": {
+        "navigation": [
+            {
+                "title": "Content",
+                "separator": True,
+                "items": [
+                    {"title": "Semsems", "icon": "toys", "link": "/admin/semsems/semsem/"},
+                    {"title": "Semsem Groups", "icon": "folder", "link": "/admin/semsems/semsemgroup/"},
+                    {"title": "Tracks", "icon": "music_note", "link": "/admin/semsems/track/"},
+                ],
+            },
+            {
+                "title": "Users & Devices",
+                "separator": True,
+                "items": [
+                    {"title": "Users", "icon": "person", "link": "/admin/accounts/user/"},
+                    {"title": "Devices", "icon": "devices", "link": "/admin/devices/device/"},
+                    {"title": "Provisioning Tokens", "icon": "key", "link": "/admin/devices/provisioningtoken/"},
+                ],
+            },
+            {
+                "title": "AI & Chat",
+                "separator": True,
+                "items": [
+                    {"title": "Chat Sessions", "icon": "chat", "link": "/admin/chat/prochatsession/"},
+                ],
+            },
+            {
+                "title": "Analytics",
+                "separator": True,
+                "items": [
+                    {"title": "Usage Stats", "icon": "bar_chart", "link": "/admin/stats/usagestats/"},
+                    {"title": "Stats Explorer", "icon": "analytics", "link": "/admin/stats-explorer/"},
+                ],
+            },
+            {
+                "title": "Firmware",
+                "separator": True,
+                "items": [
+                    {"title": "Releases", "icon": "system_update", "link": "/admin/firmware/firmwarerelease/"},
+                    {"title": "Release Groups", "icon": "group_work", "link": "/admin/firmware/releasegroup/"},
+                ],
+            },
+        ]
+    },
+}
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
