@@ -39,8 +39,19 @@ def test_rejects_unknown_token():
         DeviceTokenAuthentication().authenticate(req)
 
 
-def test_rejects_bearer_scheme_for_device_auth():
+def test_authenticates_valid_bearer_keyword():
     raw = _make()
     rf = APIRequestFactory()
     req = rf.get("/", HTTP_AUTHORIZATION=f"Bearer {raw}")
-    assert DeviceTokenAuthentication().authenticate(req) is None
+    user, dev = DeviceTokenAuthentication().authenticate(req)
+    assert dev.device_id == "aabbccddeeff"
+
+
+def test_bearer_and_device_return_same_device():
+    raw = _make()
+    rf = APIRequestFactory()
+    req_bearer = rf.get("/", HTTP_AUTHORIZATION=f"Bearer {raw}")
+    req_device = rf.get("/", HTTP_AUTHORIZATION=f"Device {raw}")
+    _, dev_bearer = DeviceTokenAuthentication().authenticate(req_bearer)
+    _, dev_device = DeviceTokenAuthentication().authenticate(req_device)
+    assert dev_bearer.pk == dev_device.pk

@@ -179,16 +179,34 @@ Status codes:
 
 ### 4.2 Audio file downloads
 
-Tracks are downloaded with plain `GET` to the `url` field. The firmware:
+Tracks are downloaded with plain `GET` to the `url` field. The firmware has
+two modes:
+
+**SD mode** (SD card present at boot):
 
 - sends the device's Bearer token;
 - streams the body in 4 KiB chunks straight to the SD card;
 - expects `200 OK`;
-- does not honor `Content-Range`/resume — a partial download is discarded on
-  the next boot if corrupted (the firmware will re-fetch if decode fails).
+- partial downloads are discarded on the next boot if corrupted (the firmware
+  will re-fetch if decode fails).
 
-Recommendations for the backend:
+**Stream mode** (no SD card):
 
+- sends the device's Bearer token;
+- sends `Range: bytes=N-` when resuming mid-track (`N` = compressed-byte
+  offset tracked by the firmware);
+- expects `206 Partial Content` with `Content-Range` and `Accept-Ranges:
+  bytes` headers;
+- if the server returns `200` instead of `206`, the firmware falls back to
+  playing the track from the start.
+
+Requirements for the backend / CDN:
+
+- **Must support `Range` requests** and return `206 Partial Content` with a
+  valid `Content-Range` header. This is required for stream-mode devices to
+  resume playback after NFC removal.
+- **Must return `Accept-Ranges: bytes`** on all audio responses so the
+  firmware can detect Range support.
 - Serve from a CDN; the `url` can be a pre-signed URL that skips the auth
   header. The firmware sets the header but tolerates 2xx regardless.
 - Keep files < 20 MiB each for flash/SD comfort.

@@ -11,9 +11,17 @@ class DeviceTokenAuthentication(authentication.BaseAuthentication):
 
     def authenticate(self, request):
         header = request.META.get("HTTP_AUTHORIZATION", "")
-        if not header.startswith(self.keyword + " "):
-            return None
-        raw = header[len(self.keyword) + 1:].strip()
+        # Support both firmware (sends `Bearer <token>`) and older clients using
+        # `Device <token>`. Match `Bearer ` first per the backend contract, then
+        # fall back to `Device ` for backward compatibility. Keyword matching is
+        # case-insensitive.
+        h = header or ""
+        hl = h.lower()
+        raw = None
+        if hl.startswith("bearer "):
+            raw = h[7:].strip()
+        elif hl.startswith(self.keyword.lower() + " "):
+            raw = h[len(self.keyword) + 1 :].strip()
         if not raw:
             return None
         try:

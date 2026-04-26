@@ -64,3 +64,13 @@ async def test_ws_rejects_oversized_role(device_token, monkeypatch):
     comm = WebsocketCommunicator(application, url)
     connected, _ = await comm.connect()
     assert not connected
+
+
+async def test_ws_auth_with_bearer_header(device_token, monkeypatch):
+    monkeypatch.setattr(gemini_client, "GeminiLiveSession", lambda role: _FakeSession())
+    url = "/chat?role=doctor&device=aabbccddeeff&semsem=aa"
+    headers = [(b"authorization", f"Bearer {device_token}".encode("ascii"))]
+    comm = WebsocketCommunicator(application, url, headers=headers)
+    connected, _ = await comm.connect()
+    assert connected
+    await comm.disconnect()

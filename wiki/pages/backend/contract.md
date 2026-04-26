@@ -100,10 +100,10 @@ URL: `wss://<host>/chat?role=<role>&device=<device_id>&semsem=<uid_hex>`.
 
 ## Audio CDN
 
-- Plain `GET` to manifest's `tracks[].url`.
-- Firmware streams body in 4 KiB chunks to SD.
-- No `Content-Range`/resume.
-- Recommend pre-signed URLs that ignore the Bearer header.
+- `GET` to manifest's `tracks[].url`.
+- **SD mode:** firmware streams body in 4 KiB chunks directly to `/sdcard/semsem/<uid>/<name>`.
+- **Stream mode (no SD):** firmware opens the URL with `Range: bytes=N-` when resuming mid-track; `N` is the compressed-byte offset. CDN **must** support `Range` requests and return `206 Partial Content` with `Accept-Ranges: bytes`. If it returns `200`, firmware plays from the start of the track.
+- Recommend pre-signed URLs; firmware sends Bearer header but CDN may ignore it.
 - Files ≤ 20 MiB; 44.1/48 kHz stereo MP3 @ 128–192 kbps preferred.
 
 ## Dependencies
@@ -116,5 +116,5 @@ URL: `wss://<host>/chat?role=<role>&device=<device_id>&semsem=<uid_hex>`.
 ---
 confidence: 0.92
 sources: [S2, S3, S5]
-last_confirmed: 2026-04-24
+last_confirmed: 2026-04-26
 status: partial

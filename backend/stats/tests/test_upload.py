@@ -53,3 +53,15 @@ def test_rejects_unknown_semsem_uid(api_client):
                                     "last_played_unix": 0, "pro_session_count": 0, "pro_total_ms": 0}, format="json")
     assert r.status_code == 400
     assert "unknown semsem" in str(r.data)
+
+
+def test_stats_upload_with_bearer_auth(api_client):
+    user = get_user_model().objects.create_user(email="bearer-stats@b.com", password="x")
+    raw = generate_token()
+    Device.objects.create(device_id="112233445566", user=user, token_hash=hash_token(raw))
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {raw}")
+    Semsem.objects.create(uid_hex="cc", title="Bearer Stats Test", is_pro=False)
+    body = {"uid": "cc", "play_count": 10, "total_play_ms": 50000,
+            "last_played_unix": 1734551234, "pro_session_count": 0, "pro_total_ms": 0}
+    r = api_client.post("/stats", body, format="json")
+    assert r.status_code == 200
