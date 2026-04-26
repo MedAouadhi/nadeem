@@ -1,0 +1,70 @@
+{% extends "unfold/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 style="margin:0 0 1rem;font-size:1.25rem;font-weight:600">Semsem Popularity</h2>
+<div style="background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden;margin-bottom:2rem">
+  <table style="width:100%;border-collapse:collapse;font-size:.875rem">
+    <thead>
+      <tr style="background:#f9fafb;border-bottom:1px solid #e5e7eb">
+        <th style="padding:.75rem 1rem;text-align:left;font-weight:600">#</th>
+        <th style="padding:.75rem 1rem;text-align:left;font-weight:600">Semsem</th>
+        <th style="padding:.75rem 1rem;text-align:left;font-weight:600;font-family:monospace">UID</th>
+        <th style="padding:.75rem 1rem;text-align:right;font-weight:600">Plays</th>
+        <th style="padding:.75rem 1rem;text-align:right;font-weight:600">Listen Hours</th>
+        <th style="padding:.75rem 1rem;text-align:right;font-weight:600">Pro Sessions</th>
+        <th style="padding:.75rem 1rem;text-align:right;font-weight:600">Devices</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in semsem_rows %}
+      <tr style="border-bottom:1px solid #f3f4f6">
+        <td style="padding:.75rem 1rem;color:#9ca3af">{{ forloop.counter }}</td>
+        <td style="padding:.75rem 1rem;font-weight:500">{{ row.title }}</td>
+        <td style="padding:.75rem 1rem;font-family:monospace;color:#6b7280;font-size:.8rem">{{ row.uid_hex }}</td>
+        <td style="padding:.75rem 1rem;text-align:right">{{ row.plays }}</td>
+        <td style="padding:.75rem 1rem;text-align:right">{{ row.listen_hours }}h</td>
+        <td style="padding:.75rem 1rem;text-align:right">{{ row.pro_sessions }}</td>
+        <td style="padding:.75rem 1rem;text-align:right">{{ row.devices }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" style="padding:2rem;text-align:center;color:#9ca3af">No usage data yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2 style="margin:0 0 1rem;font-size:1.25rem;font-weight:600">User Engagement</h2>
+<div style="background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden">
+  <table style="width:100%;border-collapse:collapse;font-size:.875rem">
+    <thead>
+      <tr style="background:#f9fafb;border-bottom:1px solid #e5e7eb">
+        <th style="padding:.75rem 1rem;text-align:left;font-weight:600">User</th>
+        <th style="padding:.75rem 1rem;text-align:right;font-weight:600">Devices</th>
+        <th style="padding:.75rem 1rem;text-align:right;font-weight:600">Total Listen Hours</th>
+        <th style="padding:.75rem 1rem;text-align:right;font-weight:600">Pro Sessions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in user_stats %}
+      <tr style="border-bottom:1px solid #f3f4f6">
+        <td style="padding:.75rem 1rem">{{ u.email }}</td>
+        <td style="padding:.75rem 1rem;text-align:right">{{ u.device_count }}</td>
+        <td style="padding:.75rem 1rem;text-align:right">
+          {% if u.total_play_ms %}
+            {{ u.total_play_ms|floatformat:0 }}ms
+          {% else %}—{% endif %}
+        </td>
+        <td style="padding:.75rem 1rem;text-align:right">{{ u.total_pro|default:"0" }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="padding:2rem;text-align:center;color:#9ca3af">No users.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
