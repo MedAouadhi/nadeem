@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/api-client";
 import { useState } from "react";
 import { AddDeviceModal } from "@/components/AddDeviceModal";
+import { ErrorCard } from "@/components/ErrorCard";
 
 type Device = {
   device_id: string;
@@ -18,7 +19,7 @@ export default function Devices() {
   const qc = useQueryClient();
   const [revoking, setRevoking] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const { data: devices = [], isLoading } = useQuery({ queryKey: ["devices"], queryFn: () => client<Device[]>("/api/devices") });
+  const { data: devices = [], isLoading, error } = useQuery({ queryKey: ["devices"], queryFn: () => client<Device[]>("/api/devices") });
   const revoke = useMutation({
     mutationFn: (id: string) => fetch(`/api/devices/${id}`, { method: "DELETE" }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["devices"] }),
@@ -43,7 +44,9 @@ export default function Devices() {
         </button>
       </div>
 
-      {isLoading ? (
+      {error ? (
+        <ErrorCard />
+      ) : isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1,2,3].map((i) => <div key={i} className="bg-surface-container-highest rounded-xl h-48 animate-pulse" />)}
         </div>

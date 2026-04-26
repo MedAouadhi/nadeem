@@ -2,13 +2,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/api-client";
 import { SemsemCard } from "@/components/SemsemCard";
+import { ErrorCard } from "@/components/ErrorCard";
 import { useState } from "react";
 
 type Semsem = { uid_hex: string; title: string; is_pro: boolean; role: string; description?: string; duration?: string; image_url?: string };
 
 export default function Library() {
   const [filter, setFilter] = useState<"all" | "regular" | "pro">("all");
-  const { data: list = [], isLoading } = useQuery({ queryKey: ["semsems"], queryFn: () => client<Semsem[]>("/api/semsems") });
+  const { data: list = [], isLoading, error } = useQuery({ queryKey: ["semsems"], queryFn: () => client<Semsem[]>("/api/semsems") });
 
   const filtered = filter === "all" ? list : filter === "pro" ? list.filter((s) => s.is_pro) : list.filter((s) => !s.is_pro);
 
@@ -29,7 +30,9 @@ export default function Library() {
         </div>
       </div>
 
-      {isLoading ? (
+      {error ? (
+        <ErrorCard />
+      ) : isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {[1,2,3,4].map((i) => <div key={i} className="bg-surface-container-highest rounded-[2rem] h-72 animate-pulse" />)}
         </div>

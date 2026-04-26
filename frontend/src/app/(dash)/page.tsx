@@ -1,15 +1,25 @@
 import { backend } from "@/lib/api";
 import { StatCard } from "@/components/StatCard";
+import { ErrorCard } from "@/components/ErrorCard";
 import { msToHours } from "@/lib/format";
 
 type Stats = { total_listening_ms: number; unique_semsems: number; pro_total_ms: number; device_count: number; online_device_count: number };
 type Device = { device_id: string; online: boolean; last_seen_at: string | null; name: string | null };
 
 export default async function Dashboard() {
-  const [stats, devices] = await Promise.all([
-    backend<Stats>("/api/users/me/stats"),
-    backend<Device[]>("/api/devices"),
-  ]);
+  let stats: Stats | null = null;
+  let devices: Device[] = [];
+
+  try {
+    [stats, devices] = await Promise.all([
+      backend<Stats>("/api/users/me/stats"),
+      backend<Device[]>("/api/devices"),
+    ]);
+  } catch {
+    return <ErrorCard />;
+  }
+
+  if (!stats) return <ErrorCard />;
 
   const primaryDevice = devices[0];
 

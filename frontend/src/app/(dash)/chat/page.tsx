@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/api-client";
 import { ChatBubble } from "@/components/ChatBubble";
+import { ErrorCard } from "@/components/ErrorCard";
 import { useState } from "react";
 import { fmtDate } from "@/lib/format";
 
@@ -10,7 +11,7 @@ type Message = { role: "user" | "assistant"; text: string; ts: string };
 
 export default function ChatHistory() {
   const [selected, setSelected] = useState<string | null>(null);
-  const { data: sessions = [] } = useQuery({ queryKey: ["chat-sessions"], queryFn: () => client<Session[]>("/api/chat-sessions") });
+  const { data: sessions = [], error: sessionsError } = useQuery({ queryKey: ["chat-sessions"], queryFn: () => client<Session[]>("/api/chat-sessions") });
   const { data: messages = [] } = useQuery({
     queryKey: ["chat-session", selected],
     queryFn: () => client<Message[]>(`/api/chat-sessions/${selected}`),
@@ -59,12 +60,15 @@ export default function ChatHistory() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-on-surface-variant">
-              <div className="text-center">
-                <span className="material-symbols-outlined text-6xl mb-3">chat</span>
-                <p>اختر محادثة لعرضها</p>
+            <>
+              {sessionsError && <div className="p-6"><ErrorCard /></div>}
+              <div className="flex-1 flex items-center justify-center text-on-surface-variant">
+                <div className="text-center">
+                  <span className="material-symbols-outlined text-6xl mb-3">chat</span>
+                  <p>اختر محادثة لعرضها</p>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
