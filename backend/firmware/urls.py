@@ -1,3 +1,7 @@
 from django.urls import path
 
-urlpatterns: list = []
+from . import views
+
+urlpatterns = [
+    path("check", views.ota_check),
+]
