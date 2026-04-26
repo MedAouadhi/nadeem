@@ -10,6 +10,8 @@ class ProChatSession(models.Model):
     role = models.CharField(max_length=31)
     started_at = models.DateTimeField(default=timezone.now)
     ended_at = models.DateTimeField(null=True, blank=True)
+    flagged = models.BooleanField(default=False)
+    flag_reason = models.CharField(max_length=256, blank=True, default="")
 
     class Meta:
         ordering = ["-started_at"]
