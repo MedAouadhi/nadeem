@@ -45,11 +45,11 @@ docker compose run --rm backend python manage.py createsuperuser
 
 | Service | URL |
 |---------|-----|
-| Web frontend | http://localhost:3000 |
-| Backend API | http://localhost:8000 |
-| MinIO console | http://localhost:9003 |
-| PostgreSQL | localhost:5433 |
-| Redis | localhost:6380 |
+| Web frontend | http://localhost:3001 |
+| Backend API | http://localhost:8001 |
+| MinIO console | http://localhost:9005 |
+| PostgreSQL | localhost:5434 |
+| Redis | localhost:6381 |
 
 ### 5. Provision a device (dev)
 
@@ -83,7 +83,7 @@ docker compose down -v       # stop and delete volumes (resets DB + MinIO)
 ```
 ┌─────────────┐     ┌──────────────┐     ┌──────────┐
 │  Browser     │────▶│  Next.js BFF │────▶│  Django   │
-│  (Arabic RTL)│◀────│  :3000       │◀────│  :8000    │
+│  (Arabic RTL)│◀────│  :3001       │◀────│  :8001    │
 └─────────────┘     └──────────────┘     └────┬─────┘
                          │                     │
                          │  JWT in httpOnly     │
