@@ -21,6 +21,7 @@ dependencies = [
   "django-cors-headers>=4.4",
   "django-unfold>=0.40",
   "django-admin-sortable2>=2.1",
+  "whitenoise>=6.0",
 ]
 
 [project.optional-dependencies]
