@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC = ["/login", "/api/auth/login"];
+const PUBLIC = ["/login", "/signup", "/api/auth/login", "/api/auth/signup", "/nadeem-logo.svg"];
 
 export function middleware(req: NextRequest) {
   const url = req.nextUrl;
@@ -17,4 +17,4 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"] };
+export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico).*))"] };

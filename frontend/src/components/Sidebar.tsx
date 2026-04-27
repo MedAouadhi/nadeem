@@ -7,7 +7,7 @@ const NAV = [
   { href: "/", label: "الرئيسية", icon: "home" },
   { href: "/devices", label: "أجهزتي", icon: "devices" },
   { href: "/library", label: "مكتبة السماسم", icon: "library_music" },
-  { href: "/chat-history", label: "سجل المحادثات الذكية", icon: "forum" },
+  { href: "/chat", label: "سجل المحادثات الذكية", icon: "forum" },
   { href: "/settings", label: "الإعدادات", icon: "settings" },
 ];
 

@@ -6,7 +6,7 @@ const TABS = [
   { href: "/", label: "الرئيسية", icon: "home" },
   { href: "/devices", label: "أجهزتي", icon: "devices" },
   { href: "/library", label: "المكتبة", icon: "library_music" },
-  { href: "/chat-history", label: "السجل", icon: "forum" },
+  { href: "/chat", label: "السجل", icon: "forum" },
   { href: "/settings", label: "إعدادات", icon: "settings" },
 ];
 

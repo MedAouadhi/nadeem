@@ -6,11 +6,19 @@ type Props = { open: boolean; onClose: () => void };
 
 export function AddDeviceModal({ open, onClose }: Props) {
   const qc = useQueryClient();
-  const [name, setName] = useState("");
   const [token, setToken] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const provision = useMutation({
-    mutationFn: (n: string) => fetch("/api/devices/provision", { method: "POST", body: JSON.stringify({ name: n || undefined }) }).then((r) => r.json()),
-    onSuccess: (data) => { setToken(data.provision_token); qc.invalidateQueries({ queryKey: ["devices"] }); },
+    mutationFn: () =>
+      fetch("/api/provisioning-tokens", { method: "POST", headers: { "Content-Type": "application/json" } }).then((r) => {
+        if (!r.ok) throw new Error("Failed to create token");
+        return r.json();
+      }),
+    onSuccess: (data) => {
+      setToken(data.provision_token);
+      setExpiresAt(data.expires_at);
+      qc.invalidateQueries({ queryKey: ["devices"] });
+    },
   });
 
   if (!open) return null;
@@ -30,30 +38,38 @@ export function AddDeviceModal({ open, onClose }: Props) {
             <div className="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-3xl text-primary">check_circle</span>
             </div>
-            <p className="font-body text-on-surface mb-4">تم إنشاء رمز التفعيل. أدخله على الجهاز:</p>
+            <p className="font-body text-on-surface mb-2">تم إنشاء رمز التفعيل. أدخله على الجهاز:</p>
+            {expiresAt && (
+              <p className="text-xs text-on-surface-variant mb-4">
+                صالح حتى: {new Date(expiresAt).toLocaleString("ar-SA")}
+              </p>
+            )}
             <div className="bg-surface-container rounded-xl p-4 mb-6 font-mono text-lg text-primary text-center tracking-widest select-all break-all" dir="ltr">
               {token}
             </div>
-            <button onClick={() => { setToken(null); setName(""); onClose(); }}
+            <button onClick={() => { setToken(null); setExpiresAt(null); onClose(); }}
                     className="px-6 py-3 bg-gradient-to-l from-primary to-primary-container text-on-primary rounded-full font-bold shadow-md hover:scale-[1.02] transition-all">
               تم
             </button>
           </div>
         ) : (
-          <form onSubmit={(e) => { e.preventDefault(); provision.mutate(name); }}>
-            <p className="font-body text-on-surface-variant mb-4">أدخل اسمًا للجهاز (اختياري)</p>
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: غرفة سلمان"
-                   className="w-full px-4 py-3 bg-surface-container rounded-xl text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary mb-6 font-body" />
+          <div>
+            <p className="font-body text-on-surface-variant mb-6">
+              انقر على "تفعيل" لإنشاء رمز تفعيل مؤقت. أدخل هذا الرمز على جهاز نديم لربطه بحسابك.
+            </p>
             <div className="flex gap-3 justify-end">
               <button type="button" onClick={onClose} className="px-6 py-3 rounded-full font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors">
                 إلغاء
               </button>
-              <button type="submit" disabled={provision.isPending}
+              <button type="button" onClick={() => provision.mutate()} disabled={provision.isPending}
                       className="px-6 py-3 bg-gradient-to-l from-primary to-primary-container text-on-primary rounded-full font-bold shadow-md hover:scale-[1.02] transition-all disabled:opacity-50">
                 {provision.isPending ? "جارٍ..." : "تفعيل"}
               </button>
             </div>
-          </form>
+            {provision.isError && (
+              <p className="text-error font-body text-sm mt-4 text-center">{(provision.error as Error).message}</p>
+            )}
+          </div>
         )}
       </div>
     </div>
