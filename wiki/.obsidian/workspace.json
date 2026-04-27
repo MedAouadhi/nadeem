@@ -185,6 +185,7 @@
   },
   "active": "d3b7dba56582b0b1",
   "lastOpenFiles": [
+    "pages/backend/admin-platform.md",
     "pages/frontend/overview.md",
     "pages/frontend/design-system.md",
     "pages/frontend/api-mapping.md",
@@ -218,7 +219,6 @@
     "decisions/0004-pcm16-16k-mono.md.tmp.3917611.1777068234628",
     "decisions/0003-smf-state-machines.md.tmp.3917611.1777068222040",
     "Untitled.canvas",
-    "2026-04-25.md",
     "decisions/0002-pn532-uart.md.tmp.3917611.1777068201154",
     "decisions/0001-esp32s3-audio-board.md.tmp.3917611.1777068190724",
     "decisions/index.md.tmp.3917611.1777068181285"

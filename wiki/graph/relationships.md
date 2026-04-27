@@ -65,6 +65,14 @@ Cloud Backend              --[binds-to]-->    Device, User            [0.85]  # 
 Cloud Backend              --[implements]-->  All device endpoints + /api/* [0.7]
 Cloud Backend              --[produces]-->    Manifest, ProChatSession [0.7]
 Cloud Backend              --[consumes]-->    POST /stats             [0.7]
+Cloud Backend              --[implements]-->  Admin Platform (dashboard, stats explorer, fleet ops) [0.95]
+Cloud Backend              --[implements]-->  GET /firmware/check     [0.95]  # OTA endpoint
+NadeemAdminSite            --[uses]-->        django-unfold           [0.95]
+NadeemAdminSite            --[uses]-->        django-admin-sortable2  [0.95]
+Semsem                     --[binds-to]-->    SemsemGroup             [0.95]
+Device                     --[binds-to]-->    ReleaseGroup            [0.95]  # optional, for OTA routing
+ReleaseGroup               --[uses]-->        FirmwareRelease         [0.95]
+ProChatSession             --[produces]-->    flagged, flag_reason    [0.95]  # moderation fields
 ```
 
 ## Hardware wiring
@@ -94,7 +102,7 @@ TCA9555 pins 9/10/11       --[produces]-->    Button events           [0.95]
 (empty — no incident chains yet)
 
 ---
-confidence: 0.85
-sources: [S2, S3, S4, S5, S7]
-last_confirmed: 2026-04-25
+confidence: 0.88
+sources: [S2, S3, S4, S5, S7, backend/nadeem/admin_site.py, backend/firmware/views.py]
+last_confirmed: 2026-04-27
 status: partial
