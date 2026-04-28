@@ -28,7 +28,7 @@ class BackendClient {
         '/api/auth/login',
         data: {'email': email, 'password': password},
       );
-      return resp.data!['token'] as String;
+      return resp.data!['access'] as String;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         throw const BackendAuthException('Invalid credentials');

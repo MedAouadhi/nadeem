@@ -20,7 +20,7 @@ void main() {
         '/api/auth/login',
         data: any(named: 'data'),
       )).thenAnswer((_) async => Response(
-        data: {'token': 'jwt_abc'},
+        data: {'access': 'jwt_abc', 'refresh': 'refresh_abc'},
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/auth/login'),
       ));
