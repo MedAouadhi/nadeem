@@ -1,5 +1,6 @@
 # --- Tooling ---
 .claude
+.worktrees/
 .github/skills
 .opencode/
 opencode.json
