@@ -1,4 +1,3 @@
-// lib/features/onboarding/screens/provision_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,9 +44,9 @@ class _State extends ConsumerState<ProvisionScreen> {
       );
       if (mounted) context.go('/onboarding/success', extra: widget.deviceId);
     } on ProvisionTimeoutError {
-      setState(() => _error = 'لم يتصل الجهاز بالشبكة خلال 60 ثانية.\nتحقق من كلمة مرور Wi-Fi ثم أعد المحاولة.');
+      if (mounted) setState(() => _error = 'لم يتصل الجهاز بالشبكة خلال 60 ثانية.\nتحقق من كلمة مرور Wi-Fi ثم أعد المحاولة.');
     } catch (e) {
-      setState(() => _error = 'خطأ: $e');
+      if (mounted) setState(() => _error = 'تعذّر إتمام الإعداد. حاول مجدداً.');
     }
   }
 

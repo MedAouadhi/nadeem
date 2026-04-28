@@ -34,7 +34,7 @@ final deviceDiscoveryServiceProvider = Provider<DeviceDiscoveryService>((ref) {
 
 final provisionServiceProvider = Provider<ProvisionService>((ref) {
   return ProvisionService(
-    ref.read(deviceClientProvider),
-    ref.read(backendClientProvider),
+    ref.watch(deviceClientProvider),
+    ref.watch(backendClientProvider),
   );
 });
