@@ -16,7 +16,6 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
       body: body,
       bottomNavigationBar: NadeemBottomNav(
         currentIndex: currentIndex,
