@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nadeem_mobile/core/theme/nadeem_theme.dart';
 import 'package:nadeem_mobile/features/auth/login_screen.dart';
 import 'package:nadeem_mobile/features/dashboard/dashboard_screen.dart';
 import 'package:nadeem_mobile/features/onboarding/screens/onboarding_start_screen.dart';
@@ -64,9 +66,17 @@ class NadeemApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Nadeem',
       routerConfig: _router,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4A90E2)),
-        useMaterial3: true,
+      theme: buildNadeemTheme(),
+      locale: const Locale('ar'),
+      supportedLocales: const [Locale('ar'), Locale('en')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      builder: (context, child) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: child!,
       ),
     );
   }
