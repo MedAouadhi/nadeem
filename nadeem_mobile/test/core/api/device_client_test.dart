@@ -131,4 +131,29 @@ void main() {
       );
     });
   });
+
+  group('factoryReset', () {
+    test('completes without error on 200', () async {
+      when(() => mockDio.post<Map<String, dynamic>>('/reset')).thenAnswer(
+        (_) async => Response(
+          data: {'ok': true},
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/reset'),
+        ),
+      );
+
+      await expectLater(client.factoryReset(), completes);
+    });
+
+    test('treats TCP reset (connectionError) as success', () async {
+      when(() => mockDio.post<Map<String, dynamic>>('/reset')).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/reset'),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      await expectLater(client.factoryReset(), completes);
+    });
+  });
 }
