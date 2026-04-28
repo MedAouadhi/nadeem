@@ -2,8 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nadeem_mobile/core/api/backend_client.dart';
-import 'package:nadeem_mobile/core/models/device.dart';
-import 'package:nadeem_mobile/core/models/provision_token.dart';
 
 class MockDio extends Mock implements Dio {}
 

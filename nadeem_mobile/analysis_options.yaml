@@ -4,6 +4,12 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+  errors:
+    # False positive: @JsonKey inside freezed factory constructors is valid usage.
+    invalid_annotation_target: ignore
+    # Flutter SDK ships an analysis_options.yaml that includes itself; suppress
+    # the resulting recursive-include warning.
+    included_file_warning: ignore
 
 linter:
   rules:
