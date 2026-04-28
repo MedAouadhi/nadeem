@@ -7,7 +7,7 @@ import 'package:nadeem_mobile/features/onboarding/services/device_discovery_serv
 import 'package:nadeem_mobile/features/onboarding/services/provision_service.dart';
 import 'package:nadeem_mobile/features/onboarding/services/wifi_join_service.dart';
 
-const kBackendUrl = 'https://api.nadeem.example';
+const kBackendUrl = 'http://192.168.2.131:8001';
 
 final backendClientProvider = Provider<BackendClient>(
   (_) => BackendClient(kBackendUrl),
