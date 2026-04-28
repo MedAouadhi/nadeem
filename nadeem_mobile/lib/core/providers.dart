@@ -4,6 +4,7 @@ import 'package:nadeem_mobile/core/api/backend_client.dart';
 import 'package:nadeem_mobile/core/api/device_client.dart';
 import 'package:nadeem_mobile/features/auth/auth_service.dart';
 import 'package:nadeem_mobile/features/onboarding/services/device_discovery_service.dart';
+import 'package:nadeem_mobile/features/onboarding/services/provision_service.dart';
 import 'package:nadeem_mobile/features/onboarding/services/wifi_join_service.dart';
 
 const kBackendUrl = 'https://api.nadeem.example';
@@ -29,4 +30,11 @@ final wifiJoinServiceProvider = Provider<WifiJoinService>(
 
 final deviceDiscoveryServiceProvider = Provider<DeviceDiscoveryService>((ref) {
   return DeviceDiscoveryService(ref.read(deviceClientProvider));
+});
+
+final provisionServiceProvider = Provider<ProvisionService>((ref) {
+  return ProvisionService(
+    ref.read(deviceClientProvider),
+    ref.read(backendClientProvider),
+  );
 });
