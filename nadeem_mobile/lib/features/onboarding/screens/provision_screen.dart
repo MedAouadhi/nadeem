@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nadeem_mobile/core/providers.dart';
+import 'package:nadeem_mobile/core/theme/nadeem_colors.dart';
+import 'package:nadeem_mobile/core/ui/gradient_button.dart';
 import 'package:nadeem_mobile/features/onboarding/services/provision_service.dart';
 
 class ProvisionScreen extends ConsumerStatefulWidget {
@@ -34,19 +36,25 @@ class _State extends ConsumerState<ProvisionScreen> {
   Future<void> _run() async {
     try {
       final jwt = await ref.read(authServiceProvider).getToken();
-      if (jwt == null) { context.go('/login'); return; }
+      if (jwt == null) {
+        context.go('/login');
+        return;
+      }
       await ref.read(provisionServiceProvider).provisionAndWait(
-        ssid: widget.ssid,
-        password: widget.password,
-        provisionToken: widget.provisionToken,
-        deviceId: widget.deviceId,
-        jwt: jwt,
-      );
+            ssid: widget.ssid,
+            password: widget.password,
+            provisionToken: widget.provisionToken,
+            deviceId: widget.deviceId,
+            jwt: jwt,
+          );
       if (mounted) context.go('/onboarding/success', extra: widget.deviceId);
     } on ProvisionTimeoutError {
-      if (mounted) setState(() => _error = 'لم يتصل الجهاز بالشبكة خلال 60 ثانية.\nتحقق من كلمة مرور Wi-Fi ثم أعد المحاولة.');
+      if (mounted)
+        setState(() => _error =
+            'لم يتصل الجهاز بالشبكة خلال 60 ثانية.\nتحقق من كلمة مرور Wi-Fi ثم أعد المحاولة.');
     } catch (e) {
-      if (mounted) setState(() => _error = 'تعذّر إتمام الإعداد. حاول مجدداً.');
+      if (mounted)
+        setState(() => _error = 'تعذّر إتمام الإعداد. حاول مجدداً.');
     }
   }
 
@@ -54,33 +62,70 @@ class _State extends ConsumerState<ProvisionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('جاري إعداد الجهاز')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: _error != null
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                    const SizedBox(height: 16),
-                    Text(_error!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () => context.go('/dashboard'),
-                      child: const Text('العودة للرئيسية'),
-                    ),
-                  ],
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const CircularProgressIndicator(),
-                    const SizedBox(height: 24),
-                    Text('إرسال الإعدادات إلى: ${widget.ssid}'),
-                    const SizedBox(height: 8),
-                    const Text('في انتظار اتصال الجهاز بالخادم...', style: TextStyle(color: Colors.grey)),
-                  ],
-                ),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: _error != null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 128,
+                          height: 128,
+                          decoration: const BoxDecoration(
+                            color: NadeemColors.errorContainer,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.error_outline_rounded,
+                            size: 64,
+                            color: NadeemColors.error,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        _error!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: NadeemColors.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      GradientButton(
+                        label: 'العودة للرئيسية',
+                        icon: Icons.home_rounded,
+                        onPressed: () => context.go('/dashboard'),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(
+                        color: NadeemColors.primary,
+                        strokeWidth: 3,
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'إرسال الإعدادات إلى: ${widget.ssid}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: NadeemColors.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'في انتظار اتصال الجهاز بالخادم...',
+                        style: TextStyle(color: NadeemColors.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+          ),
         ),
       ),
     );
