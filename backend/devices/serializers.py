@@ -4,8 +4,13 @@ from .models import Device
 
 
 class DeviceSerializer(serializers.ModelSerializer):
-    online = serializers.BooleanField(read_only=True)
+    online_status = serializers.BooleanField(source="online", read_only=True)
+    bootstrapped = serializers.SerializerMethodField()
+
     class Meta:
         model = Device
-        fields = ["device_id", "online", "last_seen_at", "created_at"]
+        fields = ["device_id", "online_status", "bootstrapped", "last_seen_at", "created_at"]
         read_only_fields = fields
+
+    def get_bootstrapped(self, obj):
+        return True

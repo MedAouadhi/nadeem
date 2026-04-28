@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
     BootstrapView,
-    DeviceDestroyView,
+    DeviceDetailView,
     DeviceListView,
     DevProvisionView,
     ProvisioningTokenCreateView,
@@ -13,6 +13,6 @@ urlpatterns = [
     path("bootstrap", BootstrapView.as_view()),
     path("api/dev/devices", DevProvisionView.as_view()),
     path("api/devices", DeviceListView.as_view()),
-    path("api/devices/<str:device_id>", DeviceDestroyView.as_view()),
+    path("api/devices/<str:device_id>", DeviceDetailView.as_view()),
 ]
 

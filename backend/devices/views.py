@@ -85,7 +85,7 @@ class DeviceListView(generics.ListAPIView):
     def get_queryset(self):
         return Device.objects.filter(user=self.request.user).order_by("created_at")
 
-class DeviceDestroyView(generics.DestroyAPIView):
+class DeviceDetailView(generics.RetrieveDestroyAPIView):
     serializer_class = DeviceSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = "device_id"
