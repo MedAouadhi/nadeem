@@ -34,13 +34,13 @@ class ProvisionService {
 
     final deadline = DateTime.now().add(_pollTimeout);
     while (DateTime.now().isBefore(deadline)) {
-      await Future.delayed(_pollInterval);
       try {
         final device = await _backendClient.getDevice(deviceId, jwt);
         if (device.bootstrapped) return device;
       } catch (_) {
         // backend may be momentarily unreachable — keep polling
       }
+      await Future.delayed(_pollInterval);
     }
 
     throw ProvisionTimeoutError();

@@ -69,7 +69,7 @@ void main() {
           bootstrapped: false,
         ));
 
-    expect(
+    await expectLater(
       () => service.provisionAndWait(
         ssid: 'HomeWifi',
         password: 'hunter2',
