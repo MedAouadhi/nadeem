@@ -55,7 +55,7 @@ class BackendClient {
 
   Future<List<Device>> listDevices(String jwt) async {
     final resp = await _dio.get<List<dynamic>>(
-      '/api/devices/',
+      '/api/devices',
       options: Options(headers: {'Authorization': 'Bearer $jwt'}),
     );
     return (resp.data as List)
