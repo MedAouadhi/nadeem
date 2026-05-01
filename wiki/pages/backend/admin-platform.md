@@ -23,7 +23,7 @@ Nadeem's business operations platform built on Django Admin with `django-unfold`
 | `semsems.SemsemGroup` | `SemsemGroupAdmin` | icon column, semsem count |
 | `semsems.Track` | `TrackAdmin` | audio preview player inline |
 | `chat.ProChatSession` | `ProChatSessionAdmin` | flagged badge, duration display, transcript inline, flag/unflag bulk actions |
-| `stats.UsageStats` | `UsageStatsAdmin` | listen hours computed column |
+| `stats.UsageStats` | `UsageStatsAdmin` | listen minutes computed column |
 | `firmware.FirmwareRelease` | `FirmwareReleaseAdmin` | stable/dev badge, release group inline |
 | `firmware.ReleaseGroup` | `ReleaseGroupAdmin` | device count, assigned release filter |
 
@@ -46,16 +46,36 @@ KPI cards (4-up):
 - Total Semsems
 
 Today panel:
-- Listening Time (hours)
-- Pro Chat Sessions
+- Listening Time (minutes)
+- Pro Listening Time (minutes)
 
 Top Semsems table (top 10 by plays) with link to Stats Explorer.
 
 ## Stats Explorer (/admin/stats-explorer/)
 
 Two tables:
-1. **Semsem Popularity** — plays, listen hours, pro sessions, devices per semsem
-2. **User Engagement** — devices, total listen hours, pro sessions per user
+1. **Semsem Popularity** — plays, lifetime listen minutes, today's listen minutes, pro sessions, devices per semsem
+2. **User Engagement** — devices, total listen minutes, pro sessions per user
+
+## Stats Semantics
+
+- Device presence is recent backend activity, not live socket state.
+- Shared presence rule: online when `last_seen_at >= now - 5 minutes`.
+- Dashboard "Today" metrics come from `DailyUsageStats`, not `UsageStats.updated_at`.
+- Lifetime totals still come from cumulative `UsageStats` snapshots.
+
+## Internationalization
+
+Admin is fully i18n-ready with English (default) and Arabic:
+
+- **Default language:** English (`LANGUAGE_CODE = "en-us"`), RTL still works for Arabic via `django.template.context_processors.i18n`
+- **URL structure:** `/admin/` remains the admin root and `django.conf.urls.i18n` handles language switching
+- **Language switcher:** Enabled via `UNFOLD["SHOW_LANGUAGES"] = True`; unfold renders a dropdown in the header
+- **Translations:** All sidebar titles, admin `description=` strings, and template copy wrapped in `gettext_lazy` / `{% trans %}`
+- **Locale files:** `backend/locale/ar/LC_MESSAGES/django.po` + `.mo` (compiled)
+- **Unfold RTL:** Automatic — unfold's `skeleton.html` reads `LANGUAGE_BIDI` from the i18n context processor
+
+All custom model admin `description=` strings and UNFOLD sidebar titles use `gettext_lazy`. Dashboard and stats explorer templates use `{% trans %}` tags.
 
 ## Known Issues / Adaptations
 
@@ -63,9 +83,10 @@ Two tables:
 - `@admin_site.register(Model)` decorator syntax fails during Django autodiscover when `admin_site` is imported from `nadeem.admin_site` (interaction with unfold's import-time settings access). All registrations use explicit `admin_site.register(Model, ModelAdmin)` instead.
 - `django-admin-sortable2` requires the parent admin to inherit from `SortableAdminBase` when using `SortableInlineAdminMixin`. Applied to `SemsemAdmin`.
 - `format_html()` without args is deprecated in Django 5.2. Replaced static HTML badges with `mark_safe()`.
+- Custom admin view URLs must be reversed with the `admin:` namespace (e.g. `{% url 'admin:stats_explorer' %}`) when referenced from admin templates.
 
 ---
 confidence: 0.95
-sources: [backend/nadeem/admin_site.py, backend/nadeem/dashboard.py, backend/nadeem/templates/admin/index.html, backend/nadeem/templates/admin/stats_explorer.html, backend/accounts/admin.py, backend/devices/admin.py, backend/semsems/admin.py, backend/chat/admin.py, backend/stats/admin.py, backend/firmware/admin.py]
-last_confirmed: 2026-04-27
+sources: [backend/nadeem/admin_site.py, backend/nadeem/dashboard.py, backend/nadeem/templates/admin/index.html, backend/nadeem/templates/admin/stats_explorer.html, backend/accounts/admin.py, backend/devices/admin.py, backend/semsems/admin.py, backend/chat/admin.py, backend/stats/admin.py, backend/firmware/admin.py, backend/nadeem/settings.py, backend/nadeem/urls.py, backend/stats/models.py]
+last_confirmed: 2026-05-01
 status: implemented

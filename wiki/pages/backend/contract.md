@@ -16,7 +16,7 @@ Base URL is configured per device at onboarding (NVS key `backend_url`). Example
 
 | Method | Path | Auth | Body | Response |
 |--------|------|------|------|----------|
-| POST | `/bootstrap` | none | `{provision_token}` | `{device_token, device_id}` |
+| POST | `/bootstrap` | none | `{provision_token, device_id}` | `{device_token, device_id}` |
 | GET | `/semsem/{uid_hex}/manifest` | Bearer | — | manifest JSON (see below) |
 | GET | `{absolute track URL}` | Bearer (or none on CDN) | — | audio bytes |
 | POST | `/stats` | Bearer | per-UID counter snapshot | 2xx on success |
@@ -28,7 +28,8 @@ Base URL is configured per device at onboarding (NVS key `backend_url`). Example
 ```http
 POST /bootstrap
 Content-Type: application/json
-{ "provision_token": "..." }
+
+{ "provision_token": "...", "device_id": "aabbccddeeff" }
 ```
 
 Response 200:
@@ -38,6 +39,7 @@ Response 200:
 
 Backend responsibilities:
 - Validate `provision_token`. Single-use, ~10 min TTL.
+- Require `device_id` (lowercase 12-hex STA MAC) in the request body.
 - Bind `device_id` to the user that minted the prov token.
 - Invalidate `provision_token` after exchange.
 - Return long-lived, revocable `device_token`.
@@ -87,7 +89,9 @@ Status semantics:
 
 - One UID per request (v0.1).
 - Counters are **cumulative snapshots**, not deltas. Backend stores last value per `(device_id, uid)` and computes deltas server-side.
+- Backend also rolls those computed deltas into one `DailyUsageStats` row per `(device_id, uid, day)` so "today" metrics can be queried accurately enough without changing the firmware payload.
 - `last_played_unix` may be 0 / pre-2000 → "unknown".
+- If `last_played_unix` is invalid or overflows timestamp parsing, backend attributes the delta to the server receive day.
 - 2xx clears the dirty flag on the device.
 
 ## `WS /chat`
@@ -143,7 +147,7 @@ Rules:
 → [../system/workflows.md](../system/workflows.md)
 
 ---
-confidence: 0.92
-sources: [S2, S3, S5, backend/firmware/views.py]
-last_confirmed: 2026-04-27
+confidence: 0.94
+sources: [S2, S3, S5, backend/firmware/views.py, backend/stats/views.py, backend/stats/models.py]
+last_confirmed: 2026-05-01
 status: partial

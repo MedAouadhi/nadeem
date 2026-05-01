@@ -20,7 +20,7 @@ App  → Device:   POST /provision             form: ssid, password, provision_t
 App  ← Device:   200 {ok:true}; device persists creds, reboots ~500 ms later
 
 Device boots STA, joins LAN.
-Dev  → Backend:  POST /bootstrap             {provision_token}
+Dev  → Backend:  POST /bootstrap             {provision_token, device_id}
 Dev  ← Backend:  200 {device_token, device_id}
 Backend invalidates provision_token, binds device_id to user.
 Device persists device_token to NVS `nadeem/dev_token`. Erases `prov_token`.
@@ -105,6 +105,8 @@ Backend owns all moderation. Firmware plays whatever PCM it receives.
 - Per dirty UID: `POST /stats {uid, play_count, total_play_ms, last_played_unix, pro_session_count, pro_total_ms}` (one UID per request).
 - 2xx → clear dirty. Non-2xx → keep dirty, retry next tick.
 - Counters are **cumulative snapshots**, not deltas; backend stores last value per `(device_id, uid)` and computes deltas.
+- Backend writes those deltas into per-day `DailyUsageStats` rollups; negative regressions clamp to zero and reset the latest snapshot baseline.
+- Presence shown in web/admin uses recent backend activity from authenticated requests with a shared 5-minute TTL.
 
 ---
 
@@ -140,7 +142,7 @@ Effect: clears `nadeem` NVS namespace (Wi-Fi, backend URL, device_token, prov_to
 → [pages/mobile/flow.md](../mobile/flow.md)
 
 ---
-confidence: 0.9
-sources: [S1, S2, S3, S4, S5]
-last_confirmed: 2026-04-26
+confidence: 0.92
+sources: [S1, S2, S3, S4, S5, backend/stats/views.py, backend/devices/models.py]
+last_confirmed: 2026-05-01
 status: partial

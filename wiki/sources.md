@@ -17,6 +17,8 @@ Pointers to authoritative source material. Authority order in [AGENTS.md §4](AG
 | S11 | [`llm-wiki.md`](../llm-wiki.md) | methodology | n/a | Wiki construction guide |
 | S12 | [`docs/`](../docs/) | scaffolding | 3 | Templates and modes; mostly empty knowledge-base/diagrams |
 | S13 | [`docs/superpowers/plans/2026-04-27-nadeem-admin-platform.md`](../docs/superpowers/plans/2026-04-27-nadeem-admin-platform.md) | implementation-plan | 3 | Step-by-step plan for admin platform v1 |
+| S14 | [`docs/superpowers/specs/2026-05-01-stats-and-presence-design.md`](../docs/superpowers/specs/2026-05-01-stats-and-presence-design.md) | design-spec | 3 | Approved design for recent-activity presence and daily stats rollups |
+| S15 | [`docs/superpowers/plans/2026-05-01-stats-presence.md`](../docs/superpowers/plans/2026-05-01-stats-presence.md) | implementation-plan | 3 | Execution plan for stats/presence alignment |
 
 ## Implementation status by source
 
@@ -24,6 +26,7 @@ Pointers to authoritative source material. Authority order in [AGENTS.md §4](AG
 - **S7, S8, S9** — partially implemented (admin platform v1 done 2026-04-27; remaining APIs spec-only).
 - **S6** — original brief; superseded in detail by later docs but still useful for intent.
 - **S13** — fully executed on 2026-04-27.
+- **S14, S15** — executed on 2026-05-01 for backend/frontend stats and presence alignment.
 
 ## Ingest log
 
@@ -31,3 +34,4 @@ Pointers to authoritative source material. Authority order in [AGENTS.md §4](AG
 |------|--------|--------|
 | 2026-04-24 | All above | Initial wiki bootstrap |
 | 2026-04-27 | S13 + backend code | Admin platform implementation; updated data-model, contract, component-status, relationships; added admin-platform.md |
+| 2026-05-01 | S14 + S15 + backend/frontend code | Stats/presence implementation; updated admin-platform, contract, and workflows for daily rollups and 5-minute recent-activity presence |
