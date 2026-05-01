@@ -13,11 +13,11 @@ From `firmware/main/main.c`:
 
 1. `nvs_flash_init`, default event loop, `nadeem_events_init`.
 2. `bsp_init(16000, 2, 16)` — codecs at 16 kHz, 2 ch capture, 16-bit.
-3. `bsp_sdcard_mount("/sdcard", 10)`.
+3. `bsp_sdcard_mount("/sdcard", 10)` — result stored in `bsp_sdcard_available()`. Failure is non-fatal; device enters stream-only mode.
 4. `board_io_init` — TCA9555 + button scanner.
 5. `stats_init`, `led_start`, `console_cmds_start` — always on.
 6. Branch on `nadeem_config_has_wifi()`:
-   - **Yes:** subscribe `on_wifi_up`, start STA, start `hmi`, `audio`, `semsem`, `semsem_pro`.
+   - **Yes:** subscribe `on_wifi_up`, start STA, start `hmi`, `audio`, `semsem`, `semsem_pro`. `semsem` reads `bsp_sdcard_available()` at start and selects SD-cache or network-stream mode. `semsem_pro` is always started (it is SD-independent).
    - **No:** start `onboarding` (SoftAP + HTTP server).
 7. `on_wifi_up`: if no `device_token` but a `prov_token` exists in NVS, init backend client, redeem the prov token for a `device_token`, persist it, erase the prov token. Then init backend client with the token and post `NEV_SYS_BACKEND_UP`.
 
@@ -38,9 +38,11 @@ Every domain module runs as an SMF state machine on its own task. Events from `n
 
 ## Resilience
 
-- Backend can be down: device plays cached semsems from `/sdcard/semsem/<uid>/`.
-- Wi-Fi can drop: cached playback continues; LED enters `LED_WIFI_LOST`.
-- `device_token` revoked: backend calls 4xx; firmware degrades to cache.
+- **SD present, backend down:** device plays cached semsems from `/sdcard/semsem/<uid>/`.
+- **SD absent, backend up:** `semsem` streams audio directly from manifest CDN URLs. Manifest persisted in NVS (`nd_manifest` namespace) so repeat taps skip the backend call.
+- **SD absent, backend down:** tap fails to `S_ERROR`; `NEV_SYS_ERROR` fires; NVS manifest used if previously cached.
+- Wi-Fi can drop: cached (SD) playback continues; LED enters `LED_WIFI_LOST`.
+- `device_token` revoked: backend calls 4xx; firmware degrades to SD cache (or error if no SD).
 - Crash on `/provision`: TCP reset is normal — device reboots ~500 ms after sending `{ok:true}`.
 
 ## Build / flash
@@ -66,5 +68,5 @@ Managed components pulled from Espressif registry: `esp_websocket_client`, `esp_
 ---
 confidence: 0.95
 sources: [S1, S2, S5]
-last_confirmed: 2026-04-24
+last_confirmed: 2026-04-26
 status: implemented

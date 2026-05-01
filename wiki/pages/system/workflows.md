@@ -30,13 +30,15 @@ Source of truth: `firmware/main/main.c::on_wifi_up`, `firmware/components/onboar
 
 ---
 
-## W2. Regular semsem playback
+## W2a. Regular semsem playback — SD mode
+
+Activated when `bsp_sdcard_available()` returns true at boot.
 
 ```
 Child places tag.
 hmi  → bus:      NEV_HMI_SEMSEM_PLACED {uid}
 semsem checks /sdcard/semsem/<uid>/manifest.json
-  cache hit  → play tracks via audio component
+  cache hit  → play tracks via audio component (file:// path)
   cache miss → led: SEMSEM_LOADING
                backend_client → GET /semsem/<uid>/manifest    (Bearer)
                for each track: GET <url> → /sdcard/semsem/<uid>/<name>
@@ -46,7 +48,33 @@ stats records play_count, total_play_ms, last_played_unix.
 Child lifts tag → NEV_HMI_SEMSEM_REMOVED → NEV_AUDIO_STOP.
 ```
 
-Resume behavior: `audio` seeks to `start_byte` from saved progress; best-effort (some MP3s restart from 0 — see [pages/firmware/limitations.md](../firmware/limitations.md)).
+Resume: track-index + byte offset saved to NVS `nd_progress`; best-effort byte seek.
+
+---
+
+## W2b. Regular semsem playback — stream mode (no SD)
+
+Activated when `bsp_sdcard_available()` returns false at boot.
+
+```
+Child places tag.
+hmi  → bus:      NEV_HMI_SEMSEM_PLACED {uid}
+semsem checks NVS nd_manifest/<uid>
+  cache hit  → parse manifest (name + url per track)
+  cache miss → led: SEMSEM_LOADING
+               backend_client → GET /semsem/<uid>/manifest    (Bearer)
+               persist JSON to NVS nd_manifest/<uid>
+               parse manifest
+semsem → audio_set_stream_source(backend_client_read_chunk, http_client)
+semsem → NEV_AUDIO_PLAY {path="raw://stream/N.mp3"}
+         (audio ASP calls read callback; backend_client streams HTTPS with
+          optional Range: bytes=N- header for resumption)
+audio component emits NEV_AUDIO_STATE / NEV_AUDIO_TRACK_DONE.
+stats records play_count, total_play_ms, last_played_unix.
+Child lifts tag → NEV_HMI_SEMSEM_REMOVED → stream_close(), NEV_AUDIO_STOP.
+```
+
+Resume: track-index saved in NVS `nd_progress`; byte offset is compressed-HTTP offset (tracked by `stream_read_cb`). CDN must support `Range` for byte resume; falls back to track start otherwise.
 
 ---
 
@@ -114,5 +142,5 @@ Effect: clears `nadeem` NVS namespace (Wi-Fi, backend URL, device_token, prov_to
 ---
 confidence: 0.9
 sources: [S1, S2, S3, S4, S5]
-last_confirmed: 2026-04-24
+last_confirmed: 2026-04-26
 status: partial

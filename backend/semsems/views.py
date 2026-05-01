@@ -1,0 +1,54 @@
+from django.db.models import Sum
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from devices.auth import DeviceTokenAuthentication
+from stats.models import UsageStats
+
+from .models import Semsem
+from .serializers import (
+    FirmwareManifestSerializer,
+    SemsemWebDetailSerializer,
+    SemsemWebListSerializer,
+)
+
+
+class FirmwareManifestView(generics.RetrieveAPIView):
+    authentication_classes = [DeviceTokenAuthentication]
+    serializer_class = FirmwareManifestSerializer
+    queryset = Semsem.objects.prefetch_related("tracks")
+    lookup_field = "uid_hex"
+    lookup_url_kwarg = "uid_hex"
+
+    def get_object(self):
+        self.kwargs["uid_hex"] = self.kwargs["uid_hex"].lower()
+        return super().get_object()
+
+def _bound_uids(user):
+    return UsageStats.objects.filter(device__user=user).values_list("uid_hex", flat=True).distinct()
+
+class SemsemListWebView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    serializer_class = SemsemWebListSerializer
+
+    def get_queryset(self):
+        return Semsem.objects.filter(uid_hex__in=_bound_uids(self.request.user)).order_by("uid_hex")
+
+class SemsemDetailWebView(generics.RetrieveAPIView):
+    authentication_classes = [JWTAuthentication]
+    serializer_class = SemsemWebDetailSerializer
+    lookup_field = "uid_hex"
+
+    def get_queryset(self):
+        return Semsem.objects.filter(uid_hex__in=_bound_uids(self.request.user)).prefetch_related("tracks")
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        agg = UsageStats.objects.filter(device__user=request.user, uid_hex=instance.uid_hex).aggregate(
+            play_count=Sum("play_count"), total_play_ms=Sum("total_play_ms"),
+            pro_session_count=Sum("pro_session_count"), pro_total_ms=Sum("pro_total_ms"),
+        )
+        for k, v in agg.items():
+            setattr(instance, k, v or 0)
+        return Response(self.get_serializer(instance).data)

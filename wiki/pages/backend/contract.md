@@ -21,6 +21,7 @@ Base URL is configured per device at onboarding (NVS key `backend_url`). Example
 | GET | `{absolute track URL}` | Bearer (or none on CDN) | — | audio bytes |
 | POST | `/stats` | Bearer | per-UID counter snapshot | 2xx on success |
 | WS | `/chat?role=&device=&semsem=` | Bearer | binary PCM16 / text JSON | bidirectional binary + optional control text |
+| GET | `/firmware/check?current_version=` | Bearer | — | `{has_update, version?, download_url?, changelog?}` |
 
 ## `POST /bootstrap`
 
@@ -98,12 +99,40 @@ URL: `wss://<host>/chat?role=<role>&device=<device_id>&semsem=<uid_hex>`.
 - Control: text JSON frames. Firmware scans for substrings `"listening"` / `"speaking"` (case-sensitive).
 - Lifecycle: firmware streams immediately on open (no hello). Closes on tag removal, ws-disconnect, ws-error.
 
+## `GET /firmware/check`
+
+Device-facing OTA endpoint. Returns update availability based on the device's assigned ReleaseGroup.
+
+Query params:
+- `current_version` — device's current firmware version (semantic, e.g. `"1.0.0"`)
+
+Response 200:
+```json
+{ "has_update": false }
+```
+
+Or when an update is available:
+```json
+{
+  "has_update": true,
+  "version": "2.0.0",
+  "download_url": "https://cdn.../firmware/v2.0.0.bin",
+  "changelog": "Fixed audio dropout bug"
+}
+```
+
+Rules:
+- Device must belong to a `ReleaseGroup` with an `assigned_release`.
+- Compares version tuples numerically (`2.0.0` > `1.9.9`).
+- `download_url` is null if release has no file artifact.
+- No group or no assigned release → `{has_update: false}`.
+
 ## Audio CDN
 
-- Plain `GET` to manifest's `tracks[].url`.
-- Firmware streams body in 4 KiB chunks to SD.
-- No `Content-Range`/resume.
-- Recommend pre-signed URLs that ignore the Bearer header.
+- `GET` to manifest's `tracks[].url`.
+- **SD mode:** firmware streams body in 4 KiB chunks directly to `/sdcard/semsem/<uid>/<name>`.
+- **Stream mode (no SD):** firmware opens the URL with `Range: bytes=N-` when resuming mid-track; `N` is the compressed-byte offset. CDN **must** support `Range` requests and return `206 Partial Content` with `Accept-Ranges: bytes`. If it returns `200`, firmware plays from the start of the track.
+- Recommend pre-signed URLs; firmware sends Bearer header but CDN may ignore it.
 - Files ≤ 20 MiB; 44.1/48 kHz stereo MP3 @ 128–192 kbps preferred.
 
 ## Dependencies
@@ -115,6 +144,6 @@ URL: `wss://<host>/chat?role=<role>&device=<device_id>&semsem=<uid_hex>`.
 
 ---
 confidence: 0.92
-sources: [S2, S3, S5]
-last_confirmed: 2026-04-24
+sources: [S2, S3, S5, backend/firmware/views.py]
+last_confirmed: 2026-04-27
 status: partial

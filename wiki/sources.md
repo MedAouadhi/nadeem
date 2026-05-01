@@ -16,15 +16,18 @@ Pointers to authoritative source material. Authority order in [AGENTS.md §4](AG
 | S10 | [`AGENTS.md`](../AGENTS.md) | process | n/a | Engineering rules; not domain |
 | S11 | [`llm-wiki.md`](../llm-wiki.md) | methodology | n/a | Wiki construction guide |
 | S12 | [`docs/`](../docs/) | scaffolding | 3 | Templates and modes; mostly empty knowledge-base/diagrams |
+| S13 | [`docs/superpowers/plans/2026-04-27-nadeem-admin-platform.md`](../docs/superpowers/plans/2026-04-27-nadeem-admin-platform.md) | implementation-plan | 3 | Step-by-step plan for admin platform v1 |
 
 ## Implementation status by source
 
 - **S1, S2, S3, S4, S5** — implemented in firmware v0.1 (per S5).
-- **S7, S8, S9** — spec-only, no code yet.
+- **S7, S8, S9** — partially implemented (admin platform v1 done 2026-04-27; remaining APIs spec-only).
 - **S6** — original brief; superseded in detail by later docs but still useful for intent.
+- **S13** — fully executed on 2026-04-27.
 
 ## Ingest log
 
 | Date | Source | Action |
 |------|--------|--------|
 | 2026-04-24 | All above | Initial wiki bootstrap |
+| 2026-04-27 | S13 + backend code | Admin platform implementation; updated data-model, contract, component-status, relationships; added admin-platform.md |

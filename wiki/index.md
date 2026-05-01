@@ -23,9 +23,10 @@ Schema: [AGENTS.md](AGENTS.md). Sources: [sources.md](sources.md). Health: [lint
 - [pages/firmware/console.md](pages/firmware/console.md) — REPL commands for dev/test
 - [pages/firmware/limitations.md](pages/firmware/limitations.md) — known v0.1 caveats
 
-## Backend (spec-only)
+## Backend (partially implemented)
 
 - [pages/backend/overview.md](pages/backend/overview.md) — Django/Postgres/Redis, what it owns
+- [pages/backend/admin-platform.md](pages/backend/admin-platform.md) — Django admin with unfold skin: dashboard, stats explorer, fleet ops, content management, firmware releases
 - [pages/backend/contract.md](pages/backend/contract.md) — every endpoint the firmware calls
 - [pages/backend/data-model.md](pages/backend/data-model.md) — User, Device, Semsem, Manifest, Stats, ProChatSession
 - [pages/backend/chat-pipeline.md](pages/backend/chat-pipeline.md) — VAD/ASR/LLM/TTS responsibilities

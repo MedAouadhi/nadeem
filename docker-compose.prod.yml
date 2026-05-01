@@ -1,0 +1,77 @@
+# Production overrides for nadeem
+# Usage: docker compose -f docker-compose.prod.yml up -d --build
+#
+# IMPORTANT: Copy backend/.env.prod.example → backend/.env.prod and
+#            frontend/.env.prod.example → frontend/.env.prod before deploying.
+#            Change all secrets and passwords in those files.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: nadeem
+      POSTGRES_USER: nadeem
+      # Default here matches dev for convenience — override via .env or change in prod.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nadeem_dev}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nadeem"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-nadeem}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-nadeem_dev_password}
+    volumes: [miniodata:/data]
+    ports: ["9000:9000", "9001:9001"]
+    restart: unless-stopped
+
+  minio-bootstrap:
+    image: minio/mc:latest
+    depends_on: [minio]
+    entrypoint: >
+      /bin/sh -c "
+      until /usr/bin/mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-nadeem} $${MINIO_ROOT_PASSWORD:-nadeem_dev_password}; do sleep 1; done;
+      /usr/bin/mc mb -p local/nadeem-audio || true;
+      /usr/bin/mc anonymous set download local/nadeem-audio || true;
+      "
+    restart: on-failure
+
+  backend:
+    build: ./backend
+    command: sh -c "python manage.py migrate && daphne -b 0.0.0.0 -p 8000 nadeem.asgi:application"
+    env_file: ./backend/.env.prod
+    environment:
+      DJANGO_DEBUG: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    ports: ["8000:8000"]
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    env_file: ./frontend/.env.prod
+    depends_on: [backend]
+    ports: ["3000:3000"]
+    restart: unless-stopped
+
+volumes:
+  pgdata: {}
+  miniodata: {}

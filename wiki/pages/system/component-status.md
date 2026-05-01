@@ -6,7 +6,7 @@
 | Component | Status | Source of truth |
 |-----------|--------|-----------------|
 | Firmware (ESP32-S3) | **implemented** v0.1 | `firmware/main/main.c`, `firmware/components/` |
-| Cloud backend (Django/Postgres) | spec-only | `prd_back_front.md`, `backend/backend.md`, `firmware/docs/backend.md` |
+| Cloud backend (Django/Postgres) | **partial** — admin platform + models + OTA endpoint implemented; remaining APIs spec-only | `prd_back_front.md`, `backend/backend.md`, `firmware/docs/backend.md` |
 | Web frontend (Next.js) | spec-only + static HTML mockups | `prd_back_front.md`, `frontend/design.md` |
 | Mobile companion app | spec-only | `firmware/docs/mobile.md`, `prd_back_front.md` |
 | Audio CDN | spec-only | `firmware/docs/backend.md` §4.2 |

@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem">
+  <div style="background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08)">
+    <div style="font-size:2rem;font-weight:700;color:#7c3aed">{{ kpis.total_users }}</div>
+    <div style="color:#6b7280;margin-top:.25rem;font-size:.875rem">Total Users</div>
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08)">
+    <div style="font-size:2rem;font-weight:700;color:#2563eb">{{ kpis.total_devices }}</div>
+    <div style="color:#6b7280;margin-top:.25rem;font-size:.875rem">Total Devices</div>
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08)">
+    <div style="font-size:2rem;font-weight:700;color:#16a34a">{{ kpis.online_devices }}</div>
+    <div style="color:#6b7280;margin-top:.25rem;font-size:.875rem">Online Now &mdash; {{ online_pct }}%</div>
+  </div>
+  <div style="background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08)">
+    <div style="font-size:2rem;font-weight:700;color:#d97706">{{ kpis.total_semsems }}</div>
+    <div style="color:#6b7280;margin-top:.25rem;font-size:.875rem">Total Semsems</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem">
+  <div style="background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08)">
+    <h3 style="margin:0 0 1rem;font-size:1rem;font-weight:600">Today</h3>
+    <div style="display:flex;gap:2.5rem">
+      <div>
+        <div style="font-size:1.75rem;font-weight:700">{{ today.listen_hours }}h</div>
+        <div style="color:#6b7280;font-size:.875rem">Listening Time</div>
+      </div>
+      <div>
+        <div style="font-size:1.75rem;font-weight:700">{{ today.pro_sessions }}</div>
+        <div style="color:#6b7280;font-size:.875rem">Pro Chat Sessions</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:8px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08)">
+    <h3 style="margin:0 0 1rem;font-size:1rem;font-weight:600">
+      Top Semsems
+      <a href="/admin/stats-explorer/" style="font-size:.75rem;font-weight:normal;color:#6b7280;margin-right:.5rem">View all &rarr;</a>
+    </h3>
+    {% if top_semsems %}
+    <table style="width:100%;font-size:.875rem;border-collapse:collapse">
+      {% for s in top_semsems %}
+      <tr>
+        <td style="padding:.2rem 0;color:#6b7280">{{ forloop.counter }}.</td>
+        <td style="padding:.2rem .5rem">{{ s.title }}</td>
+        <td style="padding:.2rem 0;text-align:right;color:#6b7280">{{ s.plays }} plays</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p style="color:#9ca3af;font-size:.875rem">No usage data yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="flex flex-col lg:flex-row lg:gap-8">
+    <div class="grow">
+        {% include "unfold/helpers/app_list_default.html" %}
+    </div>
+    {% include "unfold/helpers/history.html" %}
+</div>
+{% endblock %}
