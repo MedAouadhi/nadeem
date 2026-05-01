@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "pages/frontend/screens.md",
+                "file": "pages/firmware/console.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "screens"
+              "title": "console"
             }
           }
         ]
@@ -183,15 +183,19 @@
       "bases:Create new base": false
     }
   },
-  "active": "d3b7dba56582b0b1",
+  "active": "54b6b5f3879ecd08",
   "lastOpenFiles": [
+    "pages/backend/security.md",
+    "AGENTS.md",
+    "pages/backend/data-model.md",
+    "pages/firmware/overview.md",
+    "pages/firmware/onboarding.md",
+    "pages/frontend/screens.md",
     "pages/backend/admin-platform.md",
     "pages/frontend/overview.md",
     "pages/frontend/design-system.md",
     "pages/frontend/api-mapping.md",
     "pages/firmware/state-machines.md",
-    "pages/firmware/overview.md",
-    "pages/firmware/onboarding.md",
     "pages/firmware/limitations.md",
     "pages/firmware/hardware.md",
     "pages/firmware/events.md",
@@ -207,13 +211,9 @@
     "index.md",
     "README.md",
     "README.md.tmp.3917611.1777068305836",
-    "pages/backend/data-model.md",
     "lint.md",
     "lint.md.tmp.3917611.1777068289783",
-    "decisions/0005-django-postgres-backend.md",
-    "decisions/0007-stats-cumulative-snapshots.md",
     "decisions/0007-stats-cumulative-snapshots.md.tmp.3917611.1777068267159",
-    "decisions/0006-nextjs-rtl-arabic.md",
     "decisions/0006-nextjs-rtl-arabic.md.tmp.3917611.1777068255615",
     "decisions/0005-django-postgres-backend.md.tmp.3917611.1777068245230",
     "decisions/0004-pcm16-16k-mono.md.tmp.3917611.1777068234628",
