@@ -183,15 +183,15 @@
       "bases:Create new base": false
     }
   },
-  "active": "54b6b5f3879ecd08",
+  "active": "d3b7dba56582b0b1",
   "lastOpenFiles": [
+    "pages/backend/admin-platform.md",
     "pages/backend/security.md",
     "AGENTS.md",
     "pages/backend/data-model.md",
     "pages/firmware/overview.md",
     "pages/firmware/onboarding.md",
     "pages/frontend/screens.md",
-    "pages/backend/admin-platform.md",
     "pages/frontend/overview.md",
     "pages/frontend/design-system.md",
     "pages/frontend/api-mapping.md",
