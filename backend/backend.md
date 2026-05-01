@@ -79,7 +79,8 @@ Host: api.nadeem.example
 Content-Type: application/json
 
 {
-  "provision_token": "eyJhbGciOi..."
+  "provision_token": "eyJhbGciOi...",
+  "device_id": "aabbccddeeff"
 }
 ```
 
@@ -92,7 +93,8 @@ Response `200 OK`:
 }
 ```
 
-- The backend SHOULD record `device_id` at this point and bind it to the user
+- The firmware sends `device_id` as the lowercase STA MAC hex so the backend can
+  bind the physical device to the user
   that created the `provision_token`.
 - `device_token` is persisted in NVS (`nadeem/dev_token`) and used as Bearer on
   every subsequent call.
@@ -379,7 +381,7 @@ App → device:    POST /provision (ssid, pw, provision_token)
 App ← device:    200 {ok:true}; device reboots
 
 Device boots in STA mode, associates with home Wi-Fi.
-Device → backend: POST /bootstrap {provision_token}
+Device → backend: POST /bootstrap {provision_token, device_id}
 Device ← backend: 200 {device_token, device_id}     <-- binds device to user
 Device persists device_token in NVS.
 

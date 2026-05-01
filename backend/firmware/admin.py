@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
 
 from nadeem.admin_site import admin_site
@@ -15,7 +16,7 @@ class ReleaseGroupInline(admin.TabularInline):
     readonly_fields = ["name", "description"]
     can_delete = False
     max_num = 0
-    verbose_name_plural = "Release Groups using this release"
+    verbose_name_plural = _("Release Groups using this release")
 
 
 class FirmwareReleaseAdmin(ModelAdmin):
@@ -24,13 +25,13 @@ class FirmwareReleaseAdmin(ModelAdmin):
     readonly_fields = ["created_at"]
     inlines = [ReleaseGroupInline]
 
-    @admin.display(description="Stable")
+    @admin.display(description=_("Stable"))
     def stable_badge(self, obj):
         if obj.is_stable:
             return mark_safe('<span style="color:#16a34a;font-weight:bold">✓ Stable</span>')
         return mark_safe('<span style="color:#f59e0b">Dev</span>')
 
-    @admin.display(description="Groups")
+    @admin.display(description=_("Groups"))
     def group_count(self, obj):
         return obj.release_groups.count()
 
@@ -40,7 +41,7 @@ class ReleaseGroupAdmin(ModelAdmin):
     list_filter = ["assigned_release"]
     readonly_fields = ["created_at"]
 
-    @admin.display(description="Devices")
+    @admin.display(description=_("Devices"))
     def device_count(self, obj):
         return obj.devices.count()
 

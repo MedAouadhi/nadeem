@@ -41,6 +41,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -53,9 +54,11 @@ TEMPLATES = [{
     "DIRS": [BASE_DIR / "nadeem" / "templates"],
     "APP_DIRS": True,
     "OPTIONS": {"context_processors": [
+        "django.template.context_processors.debug",
         "django.template.context_processors.request",
         "django.contrib.auth.context_processors.auth",
         "django.contrib.messages.context_processors.messages",
+        "django.template.context_processors.i18n",
     ]},
 }]
 
@@ -94,7 +97,7 @@ SIMPLE_JWT = {
 
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "nadeem.storage.PublicS3Storage",
         "OPTIONS": {
             "bucket_name": "test-bucket",
             "endpoint_url": "http://localhost:9000",
@@ -118,10 +121,17 @@ GEMINI_MODEL = "gemini-3.1-flash-live-preview"
 
 DEV_PROVISIONING_ENABLED = True
 
-LANGUAGE_CODE = "ar"
+LANGUAGE_CODE = "en-us"
+LANGUAGES = [
+    ("en", "English"),
+    ("ar", "العربية"),
+]
 TIME_ZONE = "UTC"
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
+
+LOCALE_PATHS = [BASE_DIR / "locale"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATIC_URL = "static/"

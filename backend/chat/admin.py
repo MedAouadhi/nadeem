@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
 
 from nadeem.admin_site import admin_site
@@ -26,13 +27,13 @@ class ProChatSessionAdmin(ModelAdmin):
     inlines = [TranscriptInline]
     actions = ["flag_sessions", "unflag_sessions"]
 
-    @admin.display(description="Flagged")
+    @admin.display(description=_("Flagged"))
     def flagged_badge(self, obj):
         if obj.flagged:
             return mark_safe('<span style="color:#ef4444;font-weight:bold">⚑ Flagged</span>')
         return "—"
 
-    @admin.display(description="Duration")
+    @admin.display(description=_("Duration"))
     def duration_display(self, obj):
         if obj.ended_at and obj.started_at:
             delta = obj.ended_at - obj.started_at
@@ -41,15 +42,15 @@ class ProChatSessionAdmin(ModelAdmin):
             return f"{minutes}m {seconds}s"
         return mark_safe('<span style="color:#16a34a">Live</span>') if not obj.ended_at else "—"
 
-    @admin.action(description="Flag selected sessions for review")
+    @admin.action(description=_("Flag selected sessions for review"))
     def flag_sessions(self, request, queryset):
         updated = queryset.update(flagged=True)
-        self.message_user(request, f"Flagged {updated} session(s).")
+        self.message_user(request, _("Flagged %(count)s session(s).") % {"count": updated})
 
-    @admin.action(description="Unflag selected sessions")
+    @admin.action(description=_("Unflag selected sessions"))
     def unflag_sessions(self, request, queryset):
         updated = queryset.update(flagged=False, flag_reason="")
-        self.message_user(request, f"Unflagged {updated} session(s).")
+        self.message_user(request, _("Unflagged %(count)s session(s).") % {"count": updated})
 
 
 admin_site.register(ProChatSession, ProChatSessionAdmin)

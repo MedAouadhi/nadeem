@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.db.models import Count, Sum
+from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
 
 from nadeem.admin_site import admin_site
 
 from .models import User
+
 
 class UserAdmin(BaseUserAdmin, ModelAdmin):
     ordering = ["email"]
@@ -15,7 +17,7 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (
-            "Permissions",
+            _("Permissions"),
             {
                 "fields": (
                     "is_active",
@@ -26,7 +28,7 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
                 )
             },
         ),
-        ("Dates", {"fields": ("last_login", "date_joined")}),
+        (_("Dates"), {"fields": ("last_login", "date_joined")}),
     )
     add_fieldsets = (
         (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
@@ -39,11 +41,11 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
             _total_listen_ms=Sum("devices__stats__total_play_ms"),
         )
 
-    @admin.display(description="Devices", ordering="_device_count")
+    @admin.display(description=_("Devices"), ordering="_device_count")
     def device_count(self, obj):
         return obj._device_count
 
-    @admin.display(description="Listen Time", ordering="_total_listen_ms")
+    @admin.display(description=_("Listen Time"), ordering="_total_listen_ms")
     def total_listen_hours(self, obj):
         ms = obj._total_listen_ms or 0
         hours = ms / 3_600_000
