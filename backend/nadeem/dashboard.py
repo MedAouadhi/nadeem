@@ -1,31 +1,26 @@
-from datetime import timedelta
-
 from django.db.models import Sum
 from django.utils import timezone
 
 
 def dashboard_callback(request, context):
     from accounts.models import User
-    from chat.models import ProChatSession
     from devices.models import Device
     from semsems.models import Semsem
-    from stats.models import UsageStats
+    from stats.models import DailyUsageStats, UsageStats
 
     now = timezone.now()
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    online_threshold = now - timedelta(seconds=120)
+    online_threshold = now - Device.DEVICE_ONLINE_TTL
 
     total_users = User.objects.count()
     total_devices = Device.objects.count()
     online_devices = Device.objects.filter(last_seen_at__gte=online_threshold).count()
     total_semsems = Semsem.objects.count()
 
-    today_listen_ms = (
-        UsageStats.objects.filter(updated_at__gte=today_start)
-        .aggregate(total=Sum("total_play_ms"))["total"]
-        or 0
+    today = timezone.localdate()
+    today_rollup = DailyUsageStats.objects.filter(day=today).aggregate(
+        total_listen_ms=Sum("play_ms_delta"),
+        total_pro_ms=Sum("pro_total_ms_delta"),
     )
-    today_pro_sessions = ProChatSession.objects.filter(started_at__gte=today_start).count()
 
     top_stats = (
         UsageStats.objects.values("uid_hex")
@@ -54,8 +49,8 @@ def dashboard_callback(request, context):
                 "total_semsems": total_semsems,
             },
             "today": {
-                "listen_hours": round(today_listen_ms / 3_600_000, 1),
-                "pro_sessions": today_pro_sessions,
+                "listen_minutes": round((today_rollup["total_listen_ms"] or 0) / 60_000, 1),
+                "pro_minutes": round((today_rollup["total_pro_ms"] or 0) / 60_000, 1),
             },
             "top_semsems": top_semsems,
             "online_pct": round(100 * online_devices / total_devices, 1) if total_devices else 0,

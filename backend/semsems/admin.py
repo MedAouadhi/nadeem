@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from adminsortable2.admin import SortableAdminBase, SortableInlineAdminMixin
 from unfold.admin import ModelAdmin
 
@@ -16,7 +17,7 @@ class TrackInline(SortableInlineAdminMixin, admin.TabularInline):
     fields = ["name", "file", "position", "audio_preview"]
     readonly_fields = ["audio_preview"]
 
-    @admin.display(description="Preview")
+    @admin.display(description=_("Preview"))
     def audio_preview(self, obj):
         if obj.pk and obj.file:
             return format_html(
@@ -35,17 +36,17 @@ class SemsemAdmin(SortableAdminBase, ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_track_count=Count("tracks"))
 
-    @admin.display(description="Type")
+    @admin.display(description=_("Type"))
     def pro_badge(self, obj):
         if obj.is_pro:
             return mark_safe('<span style="color:#7c3aed;font-weight:bold">✦ Pro</span>')
         return "Regular"
 
-    @admin.display(description="Groups")
+    @admin.display(description=_("Groups"))
     def group_list(self, obj):
         return ", ".join(g.name for g in obj.groups.all()) or "—"
 
-    @admin.display(description="Tracks", ordering="_track_count")
+    @admin.display(description=_("Tracks"), ordering="_track_count")
     def track_count(self, obj):
         return obj._track_count
 
@@ -57,7 +58,7 @@ class SemsemGroupAdmin(ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_semsem_count=Count("semsems"))
 
-    @admin.display(description="Semsems", ordering="_semsem_count")
+    @admin.display(description=_("Semsems"), ordering="_semsem_count")
     def semsem_count(self, obj):
         return obj._semsem_count
 
@@ -67,7 +68,7 @@ class TrackAdmin(ModelAdmin):
     list_filter = ["semsem"]
     readonly_fields = ["audio_preview"]
 
-    @admin.display(description="Preview")
+    @admin.display(description=_("Preview"))
     def audio_preview(self, obj):
         if obj.file:
             return format_html(

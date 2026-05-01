@@ -1,5 +1,5 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
-  testDir: "./e2e",
+  testDir: "./src/e2e",
   use: { baseURL: "http://localhost:3001", locale: "ar" },
 });

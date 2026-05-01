@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from devices.models import Device
 from semsems.models import Semsem
-from stats.models import UsageStats
+from stats.models import DailyUsageStats, UsageStats
 
 pytestmark = pytest.mark.django_db
 
@@ -24,12 +24,33 @@ def test_aggregates_across_my_devices(api_client):
                               last_played_unix=1, pro_session_count=0, pro_total_ms=0)
     UsageStats.objects.create(device=d2, uid_hex="bb", play_count=0, total_play_ms=0,
                               last_played_unix=2, pro_session_count=3, pro_total_ms=120_000)
+    today = timezone.localdate()
+    DailyUsageStats.objects.create(
+        device=d1,
+        uid_hex="aa",
+        day=today,
+        play_count_delta=1,
+        play_ms_delta=20_000,
+        pro_session_count_delta=0,
+        pro_total_ms_delta=0,
+    )
+    DailyUsageStats.objects.create(
+        device=d2,
+        uid_hex="bb",
+        day=today,
+        play_count_delta=0,
+        play_ms_delta=5_000,
+        pro_session_count_delta=1,
+        pro_total_ms_delta=15_000,
+    )
     r = api_client.get("/api/users/me/stats")
     assert r.status_code == 200
     assert r.data == {
+        "today_listening_ms": 25_000,
         "total_listening_ms": 60_000,
+        "today_pro_ms": 15_000,
+        "total_pro_ms": 120_000,
         "unique_semsems": 2,
-        "pro_total_ms": 120_000,
         "device_count": 2,
         "online_device_count": 0,
     }
@@ -61,4 +82,15 @@ def test_online_device_count_uses_db_query(api_client):
     Device.objects.create(device_id="f"*12, user=me, token_hash="f"*64)
     r = api_client.get("/api/users/me/stats")
     assert r.data["device_count"] == 2
+    assert r.data["online_device_count"] == 1
+
+def test_online_device_count_uses_five_minute_ttl(api_client):
+    from datetime import timedelta
+
+    _login(api_client)
+    me = get_user_model().objects.get(email="a@b.com")
+    now = timezone.now()
+    Device.objects.create(device_id="1"*12, user=me, token_hash="1"*64, last_seen_at=now - timedelta(minutes=4, seconds=30))
+    Device.objects.create(device_id="2"*12, user=me, token_hash="2"*64, last_seen_at=now - timedelta(minutes=5, seconds=30))
+    r = api_client.get("/api/users/me/stats")
     assert r.data["online_device_count"] == 1

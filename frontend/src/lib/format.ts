@@ -19,3 +19,7 @@ export function fmtRelative(iso: string): string {
   if (diffDays === 1) return "أمس";
   return new Intl.DateTimeFormat("ar", { dateStyle: "medium" }).format(new Date(iso));
 }
+
+export function presenceCopy(online: boolean): string {
+  return online ? "نشط خلال آخر 5 دقائق" : "غير نشط حالياً";
+}

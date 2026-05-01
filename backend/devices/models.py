@@ -1,4 +1,5 @@
 # devices/models.py
+from datetime import timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -11,6 +12,7 @@ DEVICE_ID_RE = RegexValidator(r"^[0-9a-f]{12}$", "device_id must be 12 lowercase
 
 
 class Device(models.Model):
+    DEVICE_ONLINE_TTL = timedelta(minutes=5)
     device_id = models.CharField(max_length=12, unique=True, validators=[DEVICE_ID_RE])
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="devices")
     token_hash = models.CharField(max_length=64, unique=True)
@@ -36,7 +38,7 @@ class Device(models.Model):
     def online(self) -> bool:
         if not self.last_seen_at:
             return False
-        return (timezone.now() - self.last_seen_at).total_seconds() < 120
+        return (timezone.now() - self.last_seen_at) < self.DEVICE_ONLINE_TTL
 
 
 class ProvisioningToken(models.Model):

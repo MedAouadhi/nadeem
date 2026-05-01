@@ -1,18 +1,21 @@
 import { test, expect } from "@playwright/test";
+import { mockBackend } from "./helpers";
 
 test.describe("Library", () => {
   test("shows semsem cards", async ({ page }) => {
-    await page.route("**/api/auth/me", (r) => r.fulfill({ status: 200, body: JSON.stringify({ id: 1, email: "a@b.c" }), contentType: "application/json" }));
-    await page.route("**/api/semsems", (r) => r.fulfill({ status: 200, body: JSON.stringify([
-      { uid_hex: "aa", title: "دكتور سعيد", is_pro: true, role: "doctor", description: "طبيب ذكي" },
-      { uid_hex: "bb", title: "قصة الأرنب", is_pro: false, role: "", description: "قصة عادية" },
-    ]), contentType: "application/json" }));
+    await mockBackend(page, {
+      "/api/auth/me": { id: 1, email: "a@b.c" },
+      "/api/semsems": [
+        { uid_hex: "aa", title: "دكتور سعيد", is_pro: true, role: "doctor", description: "طبيب ذكي" },
+        { uid_hex: "bb", title: "قصة الأرنب", is_pro: false, role: "", description: "قصة عادية" },
+      ],
+    });
 
     await page.goto("/library");
-    await expect(page.getByText("مكتبة السماسم")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "مكتبة السماسم" })).toBeVisible();
     await expect(page.getByText("دكتور سعيد")).toBeVisible();
-    await expect(page.getByText("ذكي")).toBeVisible();
+    await expect(page.getByText("طبيب ذكي")).toBeVisible();
     await expect(page.getByText("قصة الأرنب")).toBeVisible();
-    await expect(page.getByText("عادي")).toBeVisible();
+    await expect(page.getByRole("button", { name: "عادي" })).toBeVisible();
   });
 });

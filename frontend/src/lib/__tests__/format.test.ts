@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { msToHours, msToMinutes, fmtRelative } from "../format";
+import { msToMinutes, fmtRelative, presenceCopy } from "../format";
 
 describe("format", () => {
-  it("converts ms to hours", () => { expect(typeof msToHours(3_600_000)).toBe("string"); });
   it("rounds minutes", () => { expect(msToMinutes(120_000)).toMatch(/2/); });
+  it("shows recent-activity online copy", () => { expect(presenceCopy(true)).toBe("نشط خلال آخر 5 دقائق"); });
+  it("shows recent-activity offline copy", () => { expect(presenceCopy(false)).toBe("غير نشط حالياً"); });
   it("shows today for recent dates", () => { expect(fmtRelative(new Date().toISOString())).toBe("اليوم"); });
 });

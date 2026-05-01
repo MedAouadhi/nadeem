@@ -1,13 +1,18 @@
 import { test, expect } from "@playwright/test";
+import { mockBackend } from "./helpers";
 
 test.describe("Dashboard", () => {
   test("shows dashboard heading for authenticated user", async ({ page }) => {
-    await page.route("**/api/auth/me", (r) => r.fulfill({ status: 200, body: JSON.stringify({ id: 1, email: "a@b.c" }), contentType: "application/json" }));
-    await page.route("**/api/users/me/stats", (r) => r.fulfill({ status: 200, body: JSON.stringify({ total_listening_ms: 3600000, unique_semsems: 5, pro_total_ms: 0, device_count: 1, online_device_count: 1 }), contentType: "application/json" }));
-    await page.route("**/api/devices", (r) => r.fulfill({ status: 200, body: JSON.stringify([{ device_id: "aabbccddeeff", name: "جهاز نديم", online: true, last_seen_at: null }]), contentType: "application/json" }));
+    await mockBackend(page, {
+      "/api/auth/me": { id: 1, email: "a@b.c" },
+      "/api/users/me/stats": { today_listening_ms: 3600000, total_listening_ms: 5400000, today_pro_ms: 600000, total_pro_ms: 1200000, unique_semsems: 5, device_count: 1, online_device_count: 1 },
+      "/api/devices": [{ device_id: "aabbccddeeff", name: "جهاز نديم", online: true, last_seen_at: null, today_listening_ms: 600000, total_listening_ms: 5400000, total_semsems: 3 }],
+    });
 
     await page.goto("/");
     await expect(page.getByText("مرحباً، أهالي نديم!")).toBeVisible();
-    await expect(page.getByText("1")).toBeVisible();
+    await expect(page.getByText("إجمالي دقائق الاستماع")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "90" })).toBeVisible();
+    await expect(page.getByText("نشط خلال آخر 5 دقائق")).toBeVisible();
   });
 });

@@ -1,6 +1,6 @@
 import { backend } from "@/lib/api";
 import { StatCard } from "@/components/StatCard";
-import { msToHours } from "@/lib/format";
+import { msToMinutes } from "@/lib/format";
 import Link from "next/link";
 
 type SemsemDetail = {
@@ -10,7 +10,9 @@ type SemsemDetail = {
   role: string;
   description?: string;
   image_url?: string;
-  total_plays?: number;
+  today_play_count?: number;
+  total_play_count?: number;
+  today_listening_ms?: number;
   total_listening_ms?: number;
   last_played_at?: string;
 };
@@ -58,25 +60,36 @@ export default async function SemsemDetailPage({ params }: { params: Promise<{ u
         <StatCard
           icon="play_circle"
           label="عدد مرات التشغيل"
-          value={semsem.total_plays ?? 0}
+          value={semsem.total_play_count ?? 0}
           sub="مرة"
           iconBg="bg-primary-container/20"
           decorative="bg-primary/5"
         />
         <StatCard
           icon="schedule"
-          label="إجمالي وقت الاستماع"
-          value={msToHours(semsem.total_listening_ms ?? 0)}
-          sub="ساعة"
+          label="دقائق الاستماع اليوم"
+          value={msToMinutes(semsem.today_listening_ms ?? 0)}
+          sub="دقيقة"
           iconBg="bg-secondary-container/20"
           decorative="bg-secondary-container/10"
         />
         <StatCard
+          icon="headphones"
+          label="إجمالي دقائق الاستماع"
+          value={msToMinutes(semsem.total_listening_ms ?? 0)}
+          sub="دقيقة"
+          iconBg="bg-tertiary-container/20"
+          decorative="bg-tertiary-container/10"
+        />
+      </div>
+
+      <div className="mt-6">
+        <StatCard
           icon="access_time"
           label="آخر تشغيل"
           value={semsem.last_played_at ? new Date(semsem.last_played_at).toLocaleDateString("ar-SA") : "لم يُشغّل"}
-          iconBg="bg-tertiary-container/20"
-          decorative="bg-tertiary-container/10"
+          iconBg="bg-surface-container"
+          decorative="bg-primary/5"
         />
       </div>
     </div>

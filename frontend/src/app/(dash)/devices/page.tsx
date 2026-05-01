@@ -4,6 +4,7 @@ import { client } from "@/lib/api-client";
 import { useState } from "react";
 import { AddDeviceModal } from "@/components/AddDeviceModal";
 import { ErrorCard } from "@/components/ErrorCard";
+import { msToMinutes, presenceCopy } from "@/lib/format";
 
 type Device = {
   device_id: string;
@@ -11,6 +12,7 @@ type Device = {
   online: boolean;
   last_seen_at: string | null;
   firmware_version: string | null;
+  today_listening_ms: number;
   total_listening_ms: number;
   total_semsems: number;
 };
@@ -71,7 +73,7 @@ export default function Devices() {
                     <div className="flex items-center gap-2 mt-1">
                       <div className={`w-2.5 h-2.5 rounded-full ${primary.online ? "bg-green-500 animate-pulse" : "bg-on-surface-variant"}`} />
                       <span className={`text-sm font-bold ${primary.online ? "text-green-700" : "text-on-surface-variant"}`}>
-                        {primary.online ? "متصل الآن" : "غير متصل"}
+                        {presenceCopy(primary.online)}
                       </span>
                       {primary.firmware_version && <span className="text-xs text-on-surface-variant ms-3">v{primary.firmware_version}</span>}
                     </div>
@@ -83,8 +85,8 @@ export default function Devices() {
                     <p className="text-xs text-on-surface-variant">سمسم</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-primary">{Math.round(primary.total_listening_ms / 3600000)}</p>
-                    <p className="text-xs text-on-surface-variant">ساعة استماع</p>
+                    <p className="text-2xl font-bold text-primary">{msToMinutes(primary.today_listening_ms)}</p>
+                    <p className="text-xs text-on-surface-variant">دقائق اليوم</p>
                   </div>
                 </div>
               </div>
@@ -103,7 +105,7 @@ export default function Devices() {
                       <p className="font-bold text-on-surface">{d.name ?? "جهاز نديم"}</p>
                       <div className="flex items-center gap-1.5">
                         <div className={`w-2 h-2 rounded-full ${d.online ? "bg-green-500" : "bg-on-surface-variant"}`} />
-                        <span className="text-xs text-on-surface-variant">{d.online ? "متصل" : "غير متصل"}</span>
+                        <span className="text-xs text-on-surface-variant">{presenceCopy(d.online)}</span>
                       </div>
                     </div>
                   </div>

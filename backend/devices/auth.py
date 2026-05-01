@@ -28,7 +28,10 @@ class DeviceTokenAuthentication(authentication.BaseAuthentication):
             device = Device.objects.select_related("user").get(token_hash=hash_token(raw))
         except Device.DoesNotExist as e:
             raise exceptions.AuthenticationFailed("invalid device token") from e
-        Device.objects.filter(pk=device.pk).update(last_seen_at=timezone.now())
+        
+        now = timezone.now()
+        Device.objects.filter(pk=device.pk).update(last_seen_at=now)
+        device.last_seen_at = now
         return (device.user, device)
 
     def authenticate_header(self, request):

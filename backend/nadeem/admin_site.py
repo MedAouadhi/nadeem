@@ -4,7 +4,7 @@ from unfold.sites import UnfoldAdminSite
 
 
 class NadeemAdminSite(UnfoldAdminSite):
-    site_header = "نديم"
+    site_header = "Nadeem"
     site_title = "Nadeem Admin"
     index_title = "Management Platform"
 
@@ -21,10 +21,13 @@ class NadeemAdminSite(UnfoldAdminSite):
 
     def stats_explorer_view(self, request):
         from django.db.models import Count, Sum
+        from django.utils import timezone
 
         from accounts.models import User
         from semsems.models import Semsem
-        from stats.models import UsageStats
+        from stats.models import DailyUsageStats, UsageStats
+
+        today = timezone.localdate()
 
         semsem_stats = (
             UsageStats.objects.values("uid_hex")
@@ -40,12 +43,19 @@ class NadeemAdminSite(UnfoldAdminSite):
             s.uid_hex: s.title
             for s in Semsem.objects.filter(uid_hex__in=[s["uid_hex"] for s in semsem_stats])
         }
+        today_semsem_ms = {
+            row["uid_hex"]: row["total"] or 0
+            for row in DailyUsageStats.objects.filter(day=today)
+            .values("uid_hex")
+            .annotate(total=Sum("play_ms_delta"))
+        }
         semsem_rows = [
             {
                 "uid_hex": s["uid_hex"],
                 "title": uid_to_title.get(s["uid_hex"], s["uid_hex"]),
                 "plays": s["total_plays"] or 0,
-                "listen_hours": round((s["total_listen_ms"] or 0) / 3_600_000, 2),
+                "listen_minutes": round((s["total_listen_ms"] or 0) / 60_000, 1),
+                "today_minutes": round((today_semsem_ms.get(s["uid_hex"], 0)) / 60_000, 1),
                 "pro_sessions": s["total_pro_sessions"] or 0,
                 "devices": s["device_count"] or 0,
             }

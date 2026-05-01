@@ -55,3 +55,47 @@ def test_bearer_and_device_return_same_device():
     _, dev_bearer = DeviceTokenAuthentication().authenticate(req_bearer)
     _, dev_device = DeviceTokenAuthentication().authenticate(req_device)
     assert dev_bearer.pk == dev_device.pk
+
+def test_auth_updates_last_seen_at():
+    from django.utils import timezone
+    from datetime import timedelta
+    from devices.models import Device
+    from devices.auth import DeviceTokenAuthentication
+    from rest_framework.test import APIRequestFactory
+    
+    user = get_user_model().objects.create_user(email="update@x.com", password="x")
+    raw = generate_token()
+    device = Device.objects.create(device_id="112233445566", user=user, token_hash=hash_token(raw))
+    
+    # Set to a point in the past
+    past = timezone.now() - timedelta(minutes=10)
+    Device.objects.filter(pk=device.pk).update(last_seen_at=past)
+    
+    rf = APIRequestFactory()
+    req = rf.get("/", HTTP_AUTHORIZATION=f"Bearer {raw}")
+    DeviceTokenAuthentication().authenticate(req)
+    
+    device.refresh_from_db()
+    assert device.last_seen_at > past
+    assert (timezone.now() - device.last_seen_at).total_seconds() < 10
+
+def test_auth_updates_request_device_object():
+    from django.utils import timezone
+    from datetime import timedelta
+    from devices.models import Device
+    from devices.auth import DeviceTokenAuthentication
+    from rest_framework.test import APIRequestFactory
+    
+    user = get_user_model().objects.create_user(email="fresh@x.com", password="x")
+    raw = generate_token()
+    device = Device.objects.create(device_id="223344556677", user=user, token_hash=hash_token(raw))
+    
+    # Set to a point in the past
+    past = timezone.now() - timedelta(minutes=10)
+    Device.objects.filter(pk=device.pk).update(last_seen_at=past)
+    
+    rf = APIRequestFactory()
+    req = rf.get("/", HTTP_AUTHORIZATION=f"Bearer {raw}")
+    _, authenticated_device = DeviceTokenAuthentication().authenticate(req)
+    
+    assert authenticated_device.last_seen_at > past

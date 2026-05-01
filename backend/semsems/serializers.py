@@ -32,13 +32,17 @@ class SemsemWebListSerializer(serializers.ModelSerializer):
         fields = ["uid_hex", "title", "is_pro", "role"]
 
 class SemsemWebDetailSerializer(serializers.ModelSerializer):
-    pro_total_ms = serializers.IntegerField(read_only=True)
-    total_play_ms = serializers.IntegerField(read_only=True)
-    play_count = serializers.IntegerField(read_only=True)
+    today_play_count = serializers.IntegerField(read_only=True)
+    total_play_count = serializers.IntegerField(read_only=True)
+    today_listening_ms = serializers.IntegerField(read_only=True)
+    total_listening_ms = serializers.IntegerField(read_only=True)
     pro_session_count = serializers.IntegerField(read_only=True)
+    pro_total_ms = serializers.IntegerField(read_only=True)
+    last_played_at = serializers.DateTimeField(read_only=True)
     tracks = TrackManifestSerializer(many=True, read_only=True)
 
     class Meta:
         model = Semsem
         fields = ["uid_hex", "title", "is_pro", "role", "tracks",
-                  "play_count", "total_play_ms", "pro_session_count", "pro_total_ms"]
+                  "today_play_count", "total_play_count", "today_listening_ms", "total_listening_ms",
+                  "pro_session_count", "pro_total_ms", "last_played_at"]

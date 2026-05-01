@@ -3,11 +3,15 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import BigIntegerField, Count, IntegerField, OuterRef, Subquery, Sum, Value
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from rest_framework import generics, permissions, status, throttling
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from stats.models import DailyUsageStats, UsageStats
 
 from .models import Device, ProvisioningToken
 from .serializers import DeviceSerializer
@@ -83,7 +87,43 @@ class DeviceListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Device.objects.filter(user=self.request.user).order_by("created_at")
+        today = timezone.localdate()
+        today_listening_subquery = (
+            DailyUsageStats.objects.filter(device=OuterRef("pk"), day=today)
+            .values("device")
+            .annotate(total=Sum("play_ms_delta"))
+            .values("total")
+        )
+        total_listening_subquery = (
+            UsageStats.objects.filter(device=OuterRef("pk"))
+            .values("device")
+            .annotate(total=Sum("total_play_ms"))
+            .values("total")
+        )
+        total_semsems_subquery = (
+            UsageStats.objects.filter(device=OuterRef("pk"))
+            .values("device")
+            .annotate(total=Count("uid_hex", distinct=True))
+            .values("total")
+        )
+        return (
+            Device.objects.filter(user=self.request.user)
+            .annotate(
+                today_listening_ms=Coalesce(
+                    Subquery(today_listening_subquery, output_field=IntegerField()),
+                    Value(0),
+                ),
+                total_listening_ms=Coalesce(
+                    Subquery(total_listening_subquery, output_field=BigIntegerField()),
+                    Value(0),
+                ),
+                total_semsems=Coalesce(
+                    Subquery(total_semsems_subquery, output_field=IntegerField()),
+                    Value(0),
+                ),
+            )
+            .order_by("created_at")
+        )
 
 class DeviceDetailView(generics.RetrieveDestroyAPIView):
     serializer_class = DeviceSerializer

@@ -1,10 +1,14 @@
+from datetime import UTC, datetime
+
 from django.db.models import Sum
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from devices.auth import DeviceTokenAuthentication
-from stats.models import UsageStats
+from django.utils import timezone
+
+from stats.models import DailyUsageStats, UsageStats
 
 from .models import Semsem
 from .serializers import (
@@ -45,10 +49,40 @@ class SemsemDetailWebView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        agg = UsageStats.objects.filter(device__user=request.user, uid_hex=instance.uid_hex).aggregate(
-            play_count=Sum("play_count"), total_play_ms=Sum("total_play_ms"),
-            pro_session_count=Sum("pro_session_count"), pro_total_ms=Sum("pro_total_ms"),
+        usage_agg = UsageStats.objects.filter(device__user=request.user, uid_hex=instance.uid_hex).aggregate(
+            total_play_count=Sum("play_count"),
+            total_listening_ms=Sum("total_play_ms"),
+            pro_session_count=Sum("pro_session_count"),
+            pro_total_ms=Sum("pro_total_ms"),
         )
-        for k, v in agg.items():
+        today_agg = DailyUsageStats.objects.filter(
+            device__user=request.user,
+            uid_hex=instance.uid_hex,
+            day=timezone.localdate(),
+        ).aggregate(
+            today_play_count=Sum("play_count_delta"),
+            today_listening_ms=Sum("play_ms_delta"),
+        )
+
+        last_played_at = None
+        candidate_unix_values = UsageStats.objects.filter(
+            device__user=request.user,
+            uid_hex=instance.uid_hex,
+            last_played_unix__gt=0,
+        ).values_list("last_played_unix", flat=True).order_by("-last_played_unix")
+        for last_played_unix in candidate_unix_values:
+            try:
+                last_played_at = datetime.fromtimestamp(last_played_unix, tz=UTC)
+                break
+            except (OverflowError, OSError, ValueError):
+                continue
+
+        merged = {
+            **usage_agg,
+            **today_agg,
+        }
+
+        for k, v in merged.items():
             setattr(instance, k, v or 0)
+        instance.last_played_at = last_played_at
         return Response(self.get_serializer(instance).data)

@@ -65,3 +65,49 @@ def test_stats_upload_with_bearer_auth(api_client):
             "last_played_unix": 1734551234, "pro_session_count": 0, "pro_total_ms": 0}
     r = api_client.post("/stats", body, format="json")
     assert r.status_code == 200
+
+def test_invalid_last_played_unix_falls_back_to_server_day(api_client):
+    from django.utils import timezone
+
+    d = _device(api_client)
+    Semsem.objects.create(uid_hex="dd", title="x", is_pro=False)
+    body = {
+        "uid": "dd",
+        "play_count": 1,
+        "total_play_ms": 100,
+        "last_played_unix": 0,
+        "pro_session_count": 0,
+        "pro_total_ms": 0,
+    }
+    r = api_client.post("/stats", body, format="json")
+    assert r.status_code == 200
+
+    from stats.models import DailyUsageStats
+
+    daily = DailyUsageStats.objects.get(device=d, uid_hex="dd")
+    assert daily.day == timezone.localdate()
+    assert daily.play_count_delta == 1
+    assert daily.play_ms_delta == 100
+
+def test_invalid_positive_last_played_unix_falls_back_to_server_day(api_client):
+    from django.utils import timezone
+
+    d = _device(api_client)
+    Semsem.objects.create(uid_hex="ee", title="x", is_pro=False)
+    body = {
+        "uid": "ee",
+        "play_count": 1,
+        "total_play_ms": 100,
+        "last_played_unix": 10**12,
+        "pro_session_count": 0,
+        "pro_total_ms": 0,
+    }
+
+    r = api_client.post("/stats", body, format="json")
+    assert r.status_code == 200
+
+    from stats.models import DailyUsageStats
+
+    daily = DailyUsageStats.objects.get(device=d, uid_hex="ee")
+    assert daily.day == timezone.localdate()
+    assert daily.play_count_delta == 1

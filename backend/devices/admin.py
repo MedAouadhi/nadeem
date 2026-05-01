@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from unfold.admin import ModelAdmin
 
 from nadeem.admin_site import admin_site
@@ -13,14 +14,14 @@ from .models import Device, ProvisioningToken
 class UsageStatsInline(admin.TabularInline):
     model = UsageStats
     extra = 0
-    readonly_fields = ["uid_hex", "play_count", "listen_hours", "pro_session_count", "updated_at"]
+    readonly_fields = ["uid_hex", "play_count", "listen_minutes", "pro_session_count", "updated_at"]
     can_delete = False
     max_num = 0
 
-    @admin.display(description="Listen Time")
-    def listen_hours(self, obj):
-        hours = obj.total_play_ms / 3_600_000
-        return f"{hours:.2f}h"
+    @admin.display(description=_("Listen Minutes"))
+    def listen_minutes(self, obj):
+        minutes = obj.total_play_ms / 60_000
+        return f"{minutes:.1f}m"
 
 
 class DeviceAdmin(ModelAdmin):
@@ -32,7 +33,7 @@ class DeviceAdmin(ModelAdmin):
     readonly_fields = ["device_id", "token_hash", "last_seen_at", "created_at"]
     inlines = [UsageStatsInline]
 
-    @admin.display(description="Status")
+    @admin.display(description=_("Status"))
     def status_badge(self, obj):
         if obj.last_seen_at and obj.online:
             return mark_safe('<span style="color:green;font-weight:bold">● Online</span>')
@@ -45,7 +46,7 @@ class ProvisioningTokenAdmin(ModelAdmin):
     readonly_fields = ["token_hash", "expires_at", "used_at", "created_at"]
     actions = ["delete_expired_tokens"]
 
-    @admin.display(description="Status")
+    @admin.display(description=_("Status"))
     def token_status(self, obj):
         if obj.is_used():
             return mark_safe('<span style="color:#9ca3af">Used</span>')
@@ -53,10 +54,10 @@ class ProvisioningTokenAdmin(ModelAdmin):
             return mark_safe('<span style="color:#ef4444">Expired</span>')
         return mark_safe('<span style="color:#16a34a">Active</span>')
 
-    @admin.action(description="Delete all expired tokens (ignores selection)")
+    @admin.action(description=_("Delete all expired tokens (ignores selection)"))
     def delete_expired_tokens(self, request, queryset):
-        deleted, _ = ProvisioningToken.objects.filter(expires_at__lt=timezone.now()).delete()
-        self.message_user(request, f"Deleted {deleted} expired token(s).")
+        deleted, _deleted_info = ProvisioningToken.objects.filter(expires_at__lt=timezone.now()).delete()
+        self.message_user(request, _("Deleted %(count)s expired token(s).") % {"count": deleted})
 
 
 admin_site.register(Device, DeviceAdmin)
